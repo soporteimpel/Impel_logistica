@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "impel_francomer",
-    "slug": "impel_francomer",
+    "name": "Impel_francomer",
+    "slug": "Impel_francomer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,10 +18,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.isildur1790.Impel_francomer",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c4895a9e-e638-4e7d-969c-ba31aaa5893d"
+      }
     }
   }
 }
