@@ -98,7 +98,7 @@ const Archivos_creados = ({listaActualizar}) => {
     contenedor: {
       ...globalstyles.contenedor,
       transform: [{ translateY: 0 }],
-      width: "60%",
+      width: "80%",
       flex:1,
       marginTop:10,
       marginBottom:20

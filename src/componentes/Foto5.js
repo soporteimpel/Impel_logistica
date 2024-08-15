@@ -4,10 +4,21 @@ import * as ImagePicker from 'expo-image-picker';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-const FotoPQR_creacion_5 = ({ urlImagen,setfoto_5_formulario }) => {
+const FotoPQR_creacion_5 = ({ urlImagen,setfoto_5_formulario,setResetFoto5 }) => {
   const [photo, setPhoto] = useState(null);
   const [id, setId] = useState(null);
-  
+  const resetFoto=()=>{
+    setPhoto(null)
+    setfoto_5_formulario("")
+  }
+
+  useEffect(()=>{
+    if(setResetFoto5){
+      setResetFoto5(()=>resetFoto)
+
+    }
+
+  },[setResetFoto5])
 
 
 

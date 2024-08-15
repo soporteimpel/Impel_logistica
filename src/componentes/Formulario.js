@@ -65,6 +65,14 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
     setBotonDeshabilitadoCrear(true);
   };
 
+  //Estados para reestablecer modulos de fotos
+  const [resetFoto1,setResetFoto1] = useState(()=>()=>{})
+  const [resetFoto2,setResetFoto2] = useState(()=>()=>{})
+  const [resetFoto3,setResetFoto3] = useState(()=>()=>{})
+  const [resetFoto4,setResetFoto4] = useState(()=>()=>{})
+  const [resetFoto5,setResetFoto5] = useState(()=>()=>{})
+  const [resetFoto6,setResetFoto6] = useState(()=>()=>{})
+
   //funcion reestablecerformulario
   const formulario_restablecido = ()=>{
     setfoto_1_formulario("")
@@ -76,6 +84,13 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
     setNombre("")
     setTelefono("")
     setcodigo("")
+    //Reset a fotos 
+    resetFoto1()
+    resetFoto2()
+    resetFoto3()
+    resetFoto4()
+    resetFoto5()
+    resetFoto6()
 
   }
 
@@ -149,19 +164,19 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
             />
           </View>
           <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_1 setfoto_1_formulario={setfoto_1_formulario} />
-            <FotoPQR_creacion_2 setfoto_2_formulario={setfoto_2_formulario} />
+            <FotoPQR_creacion_1 setfoto_1_formulario={setfoto_1_formulario}  setResetFoto1={setResetFoto1}/>
+            <FotoPQR_creacion_2 setfoto_2_formulario={setfoto_2_formulario}  setResetFoto2={setResetFoto2}/>
             
           </View>
 
           <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_3 setfoto_3_formulario={setfoto_3_formulario}/>
-            <FotoPQR_creacion_4 setfoto_4_formulario={setfoto_4_formulario}/>
+            <FotoPQR_creacion_3 setfoto_3_formulario={setfoto_3_formulario} setResetFoto3={setResetFoto3}/>
+            <FotoPQR_creacion_4 setfoto_4_formulario={setfoto_4_formulario} setResetFoto4={setResetFoto4}/>
           </View>
 
           <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_5 setfoto_5_formulario={setfoto_5_formulario}/>
-            <FotoPQR_creacion_6 setfoto_6_formulario={setfoto_6_formulario}/>
+            <FotoPQR_creacion_5 setfoto_5_formulario={setfoto_5_formulario} setResetFoto5={setResetFoto5}/>
+            <FotoPQR_creacion_6 setfoto_6_formulario={setfoto_6_formulario} setResetFoto6={setResetFoto6}/>
           </View>
 
 
