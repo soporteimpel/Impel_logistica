@@ -3,25 +3,84 @@ import { Alert } from "react-native";
 import { err } from "react-native-svg";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import * as Location from 'expo-location';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 //import AsyncStorage from "@react-native-async-storage/async-storage";
 const url = "https://www.impeltechnology.com/rest/api"
-const user = "miia-tester"
+
+
+
+
+
+
+//datos de session
+//En este componente almacenaremos todas las peticiones a rollbase
+// Función para obtener los datos del usuario almacenados en AsyncStorage
+const getStoredUserData = async () => {
+  try {
+      const storedUserData = await AsyncStorage.getItem('currentUserData_francomer');
+      if (storedUserData) {
+          const { username, password } = JSON.parse(storedUserData);
+          return { username, password };
+      }
+  } catch (error) {
+      console.error('Error al obtener los datos del usuario:', error);
+  }
+};
+
+const obtenerUsuarioYContrasena = async () => {
+  const userData = await getStoredUserData();
+  if (userData) {
+      const { username, password } = userData;
+      //console.log('Usuario:', username);
+      //console.log('Contraseña:', password);
+      // Puedes asignar los valores a otras variables si lo necesitas
+      return { username, password };
+  } else {
+      console.log('No se encontraron datos del usuario en AsyncStorage');
+      return null;
+  }
+};
+
+let user = ""
+let password = ""
+const obtenerDatosUsuario = async () => {
+  const { username: username1, password: password2 } = await obtenerUsuarioYContrasena();
+  
+  user = username1;
+  password = password2;
+
+  // Hacer algo con las variables...
+};
+
+
 //token
 export const obtenerToken = async()=>{
-    try {
-        const user = "miia-tester"
-        const password = "tester"
-        //console.log('usuario ', user, ' password ', password, ' url ', url)
-        const response = await axios.post(`${url}/login?loginName=${user}&password=${password}&output=json`)
-        //console.log('datos inicio session ', response.data.status)
-        return response.data.sessionId
+  try {
+      await obtenerDatosUsuario()
+      //console.log('usuario ', user, ' password ', password, ' url ', url)
+      const response = await axios.post(`${url}/login?loginName=${user}&password=${password}&output=json`)
+      //console.log('datos inicio session ', response.data.status)
+      return response.data.sessionId
 
-    } catch (error) {
-        console.error('Error al obtener los datos de la session ', error)
-        throw error
-    }
+  } catch (error) {
+      console.error('Error al obtener los datos de la session ', error)
+      throw error
+  }
 }
 
+export const obtenerEstadoSession = async(username, password)=>{
+  try {
+      console.log('usuario ', username, ' password ', password, ' url ', url)
+      const response = await axios.post(`${url}/login?loginName=${username}&password=${password}&output=json`)
+      console.log('datos inicio session ', response.data.status)
+      return response.data.status
+
+  } catch (error) {
+      //console.error('Error al obtener estado session ', error)
+      Alert.alert('Error','Datos Incorrectos. ')
+      throw error
+  }
+}
 
 
 //Enviar imagen base 64
@@ -307,7 +366,7 @@ export const archivosList = async()=>{
       //R52302897 realacion cliente 
       const idusuario = await userActual()
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Telefono,+status,+createdAt+from+${tablaArchivos}+WHERE+createdBy=${idusuario}+ORDER+BY+id+DESC&output=json`)
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Telefono,+Estadotxt,+createdAt,+Nombre+from+${tablaArchivos}+WHERE+createdBy=${idusuario}+ORDER+BY+id+DESC&output=json`)
       //console.log('Lista pqr este es el cliente ', responceArchivos.data)
       return responceArchivos.data
   } catch (error) {
@@ -363,3 +422,21 @@ export const obtenerUbicaion = async (setLatitud,setLongitud,setDireccion,setBot
   setBotonDeshabilitado(false)
 
 }
+
+
+
+export const datosUsuario = async()=>{
+  try {
+    const tokenusuario = await obtenerToken()
+    const idusuario = await userActual()
+    const tablaUsuarios = "USER"
+    const responDatosUser = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+id,+name,+email,+Documento+from+${tablaUsuarios}+WHERE+id=${idusuario}+ORDER+BY+id+DESC&output=json`)
+    return responDatosUser.data
+
+  } catch (error) {
+    console.log("No fue posible obtener datos de usuario ", error)
+  }
+}
+
+
+

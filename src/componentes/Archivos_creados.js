@@ -21,6 +21,7 @@ const Archivos_creados = ({listaActualizar}) => {
     const [estadoArchivo,setestadoArchivo] = useState('')
     const [telefono,setTelefono] = useState('')
     const [fechaArchivo,setfechaArchivo] = useState('')
+    const [nombreCliente,setNombreCliente] = useState('')
 
   
     useEffect(() => {
@@ -39,7 +40,9 @@ const Archivos_creados = ({listaActualizar}) => {
   
     return (
       <View style={styles.contenedor}>
-        <ScrollView>
+        <ScrollView 
+          nestedScrollEnabled={true}
+        >
           {loading ? (
             <Text>Cargando...</Text>
           ) : (
@@ -55,12 +58,13 @@ const Archivos_creados = ({listaActualizar}) => {
                   setTelefono(item[3])
                   setestadoArchivo(item[4])
                   setfechaArchivo(item[5])
+                  setNombreCliente(item[6])
 
   
                   
                 }}
               >
-                <Text style={styles.contenedorLista}>Sec {item[2]}. {item[1]}</Text>
+                <Text style={styles.contenedorLista}>{item[2]}. {item[1]}</Text>
               </Pressable>
             ))
           )}
@@ -79,6 +83,7 @@ const Archivos_creados = ({listaActualizar}) => {
                 telefono={telefono}
                 estadoArchivo={estadoArchivo}
                 fechaArchivo={fechaArchivo}
+                nombreCliente={nombreCliente}
 
               />
               
@@ -99,17 +104,18 @@ const Archivos_creados = ({listaActualizar}) => {
       ...globalstyles.contenedor,
       transform: [{ translateY: 0 }],
       width: "80%",
+      height:300,
       flex:1,
       marginTop:10,
       marginBottom:20
       
     },
     contenedorLista: {
-      backgroundColor: "#ff2301",
+      backgroundColor: "#f5f5f5",
       padding: 10,
       marginBottom: '3%',
       borderRadius: 10,
-      color: "#fff",
+      color: "#000",
       fontWeight: "bold",
     },
   });

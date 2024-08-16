@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from "react";
+import React, { useState,useEffect,useCallback} from "react";
 import {
   Text,
   Pressable,
@@ -10,89 +10,61 @@ import {
   Alert,
   TouchableNativeFeedback,
   Animated,
-  Image
+  Image,
+  BackHandler
 } from "react-native";
 
-import { crearRegistro, telefono_validar,obtenerUbicaion } from "../helpers/index_peticiones";
-import FotoPQR_creacion_1 from "./Foto1";
-import FotoPQR_creacion_2 from "./Foto2";
-import FotoPQR_creacion_3 from "./Foto3";
-import FotoPQR_creacion_5 from "./Foto5";
-import FotoPQR_creacion_6 from "./Foto6";
-import Grabacion from "./Grabacion";
-import FotoPQR_creacion_4 from "./Foto4";
-import Ubicacion from "./Ubicacion";
+import { datosUsuario } from "../helpers/index_peticiones";
+
 import Archivos_creados from "./Archivos_creados";
+import { useFocusEffect } from "@react-navigation/native";
+import CustomAlert from "./CustomAlert";
 
-const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
-  const [nombre, setNombre] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [pqrCreada, setpqrCreada] = useState("");
-  const [codigo, setcodigo] = useState(0);
+const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn,setModal }) => {
 
-  //Estado para boton
-  const [botonDeshabilitado, setBotonDeshabilitado] = useState(false);
-  const [botonDeshabilitadoCrear, setBotonDeshabilitadoCrear] = useState(false);
-  //Foto para envio en creacion
-  const [foto_1_formulario, setfoto_1_formulario] = useState("");
-  const [foto_2_formulario, setfoto_2_formulario] = useState("");
-  const [foto_3_formulario, setfoto_3_formulario] = useState("");
-  const [foto_4_formulario, setfoto_4_formulario] = useState("");
-  const [foto_5_formulario, setfoto_5_formulario] = useState("");
-  const [foto_6_formulario, setfoto_6_formulario] = useState("");
   const [animacionboton] = useState(new Animated.Value(1));
 
-  //Audio Guardado en base64
-  const [audiobase64, setAudioBase64] = useState("");
 
-  //Locacion 
-  const [longitud,setLongitud] = useState("")
-  const [latitud,setLatitud] =useState("")
-  const [direccion, setDireccion] = useState(null);
-  const [location,setLocation] =useState(null)
 
 
   //Reestablecer formulario
   const [reestablcer_formulario,serReestablecer_formulario] = useState(false)
 
+  // Control de visibilidad del alert
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
 
-  //Desabilitar boton al presionar
-  const desabilitarboton = async () => {
-    setBotonDeshabilitado(true);
-  };
+  const [data, setData] = useState([]);
 
-  const desabilitarbotonCrear = async () => {
-    setBotonDeshabilitadoCrear(true);
-  };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        setIsAlertVisible(true);
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
 
-  //Estados para reestablecer modulos de fotos
-  const [resetFoto1,setResetFoto1] = useState(()=>()=>{})
-  const [resetFoto2,setResetFoto2] = useState(()=>()=>{})
-  const [resetFoto3,setResetFoto3] = useState(()=>()=>{})
-  const [resetFoto4,setResetFoto4] = useState(()=>()=>{})
-  const [resetFoto5,setResetFoto5] = useState(()=>()=>{})
-  const [resetFoto6,setResetFoto6] = useState(()=>()=>{})
 
-  //funcion reestablecerformulario
-  const formulario_restablecido = ()=>{
-    setfoto_1_formulario("")
-    setfoto_2_formulario("")
-    setfoto_3_formulario("")
-    setfoto_4_formulario("")
-    setfoto_5_formulario("")
-    setfoto_6_formulario("")
-    setNombre("")
-    setTelefono("")
-    setcodigo("")
-    //Reset a fotos 
-    resetFoto1()
-    resetFoto2()
-    resetFoto3()
-    resetFoto4()
-    resetFoto5()
-    resetFoto6()
+  //actualizar detalle
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await datosUsuario();
+        setData(response);
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+      }
+    };
+    setlistaActualizar(actualizarLista_creado())
+    fetchData();
+  },[])
 
-  }
+
+
+
+
 
 
   //funcion cita creada
@@ -111,32 +83,19 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
     return numeroAletorio;
   };
 
-  const animacionEntrada = () => {
-    Animated.spring(animacionboton, {
-      toValue: 0.8,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const animacionSalida = () => {
-    Animated.spring(animacionboton, {
-      toValue: 1,
-      useNativeDriver: true,
-      friction: 3, //mayor el numero menor el rebote
-      tension: 100, //entre meyor el numero mas sueve el movimiento
-    }).start();
-  };
-
-  const estiloAnimacion = {
-    transform: [{ scale: animacionboton }],
-  };
-
-  const prueba = async () => {
-    console.log("boton oprimido");
-  };
 
 
-
+    // Funciones para el manejo del modal
+    const handleCloseAlert = () => {
+      setIsAlertVisible(false);
+    };
+  
+    const handleConfirmAlert = () => {
+      // Aquí puedes manejar la lógica para cerrar sesión o cualquier otra acción
+      setIsAlertVisible(false);
+      setisLoggedIn(false); // Suponiendo que tienes este estado para controlar la sesión
+      
+    };
 
 
 
@@ -145,102 +104,17 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
       <ScrollView style={styles.scrollViewContent}>
         <View style={styles.items}>
           <Image source={require('../../assets/Log_MiiA_modulo.png')} style={styles.imagen}/>
-          <View style={styles.campo}>
-            
-            <TextInput
-              style={styles.imput}
-              placeholder="Nombre Completo"
-              //keyboardType='numeric'
-              value={nombre}
-              onChangeText={setNombre}
-            />
-
-            <TextInput
-              style={styles.imput}
-              placeholder="Número de Teléfono"
-              keyboardType="numeric"
-              value={telefono}
-              onChangeText={setTelefono}
-            />
-          </View>
-          <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_1 setfoto_1_formulario={setfoto_1_formulario}  setResetFoto1={setResetFoto1}/>
-            <FotoPQR_creacion_2 setfoto_2_formulario={setfoto_2_formulario}  setResetFoto2={setResetFoto2}/>
-            
-          </View>
-
-          <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_3 setfoto_3_formulario={setfoto_3_formulario} setResetFoto3={setResetFoto3}/>
-            <FotoPQR_creacion_4 setfoto_4_formulario={setfoto_4_formulario} setResetFoto4={setResetFoto4}/>
-          </View>
-
-          <View style={styles.foto_contenedor}>
-            <FotoPQR_creacion_5 setfoto_5_formulario={setfoto_5_formulario} setResetFoto5={setResetFoto5}/>
-            <FotoPQR_creacion_6 setfoto_6_formulario={setfoto_6_formulario} setResetFoto6={setResetFoto6}/>
-          </View>
+         {data && data.length > 0 && (
+            <View style={styles.datoslogin}>
+                <Text style={styles.datosText}>{data[0][1]}</Text>
+                <Text style={styles.datosText2}>{data[0][2]}</Text>
+                <Text style={styles.datosText2}>{data[0][3]}</Text>
+              </View>
 
 
-          <Grabacion setAudioBase64={setAudioBase64} />
+         )}
 
-          <View style={styles.botoncontanier}>
-            <TouchableNativeFeedback
-              onPressIn={() => animacionEntrada()}
-              onPressOut={() => animacionSalida()}
-              onPress={() => {
-                if (!botonDeshabilitado) {
-                  desabilitarboton();
-                  telefono_validar(telefono, setBotonDeshabilitado);
-                }
-              }}
-            >
-              <Animated.View style={[styles.botonInico, estiloAnimacion]}>
-                <Text style={styles.textoboton}>Solicitar Codigo</Text>
-              </Animated.View>
-            </TouchableNativeFeedback>
-          </View>
 
-          <TextInput
-            style={styles.imput}
-            placeholder="Codigo"
-            keyboardType="numeric"
-            value={codigo}
-            onChangeText={setcodigo}
-          />
-
-          <View style={styles.botoncontanier}>
-            <TouchableNativeFeedback
-              onPressIn={() => animacionEntrada()}
-              onPressOut={() => animacionSalida()}
-              onPress={() => {
-                if (!botonDeshabilitadoCrear) {
-                  desabilitarbotonCrear();
-                  obtenerUbicaion(setLatitud,setLongitud,setDireccion,setBotonDeshabilitado,setLocation);
-                  setlistaActualizar(actualizarLista_creado())
-                  crearRegistro(
-                    nombre,
-                    foto_1_formulario,
-                    telefono,
-                    codigo,
-                    setBotonDeshabilitadoCrear,
-                    audiobase64,
-                    foto_2_formulario,
-                    foto_3_formulario,
-                    foto_4_formulario,
-                    foto_5_formulario,
-                    foto_6_formulario,
-                    latitud,
-                    longitud,
-                    direccion,
-                    formulario_restablecido
-                  );
-                }
-              }}
-            >
-              <Animated.View style={[styles.botonInico, estiloAnimacion]}>
-                <Text style={styles.textoboton}>Crear</Text>
-              </Animated.View>
-            </TouchableNativeFeedback>
-          </View>
 
 
 
@@ -249,20 +123,39 @@ const Formulario = ({ setModal, setlistaActualizar,listaActualizar }) => {
           />
           
         </View>
+
+
+        <View style={styles.contenedorboton}>
+        <Pressable style={styles.botonLogin} onPress={() => {
+            navigation.navigate('Formulario2')
+          }}
+
+          
+          
+          >
+          <Text style={styles.textoboton}>Crear</Text>
+        </Pressable>
+
+      </View>
       </ScrollView>
+
+      
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleCloseAlert}
+        onConfirm={handleConfirmAlert}
+      />
     </View>
   );
 };
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    //backgroundColor: "#D6E8EE",
+    backgroundColor: "#fff",
     alignItems: 'stretch',
-    marginBottom: 10,
-    marginTop: 10,
     width: "100%",
     borderRadius: 10,
-    marginTop:"10%"
+    
   },
   boton: {
     marginTop: 10,
@@ -341,9 +234,9 @@ const styles = StyleSheet.create({
     marginTop: 5, // Ajusta este valor para mover el botón más abajo
     alignItems: "center",
   },
-  botonInico: {
+  botonLogin: {
     marginTop: "10%",
-    backgroundColor: "#fff",
+    backgroundColor: "#ff2301",
     padding: 10,
     width: 200,
     borderRadius: 10,
@@ -351,7 +244,7 @@ const styles = StyleSheet.create({
     borderColor:"#ff2301"
   },
   textoboton: {
-    color: "#ff2301",
+    color: "#fff",
     fontWeight: "bold",
     //textTransform: "uppercase",
     textAlign: "center",
@@ -368,8 +261,28 @@ const styles = StyleSheet.create({
     marginHorizontal:'15%',
     
   },imagen:{
+    marginTop:30,
     width:150,
     height:150
+  },datoslogin:{
+    width:'100%',
+    marginLeft:'20%',
+    marginBottom:'10%',
+    marginTop:'10%',
+    
+  },datosText:{
+    fontSize:20,
+    fontWeight:'bold'
+  },datosText2:{
+    fontSize:16,
+    fontWeight:'bold',
+    color:'#dddddd'
+  },contenedorboton:{
+    width:'100%',
+    marginVertical:"5%",
+    marginBottom:'10%',
+    alignItems:'center'
+    
   }
 });
 export default Formulario;
