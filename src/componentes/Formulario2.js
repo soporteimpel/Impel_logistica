@@ -221,6 +221,7 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
               onPressIn={() => animacionEntrada()}
               onPressOut={() => animacionSalida()}
               onPress={() => {
+                obtenerUbicaion(setLatitud,setLongitud,setDireccion,setBotonDeshabilitado,setLocation);
                 if (!botonDeshabilitado) {
                   desabilitarboton();
                   telefono_validar(telefono, setBotonDeshabilitado);
@@ -248,7 +249,7 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
               onPress={() => {
                 if (!botonDeshabilitadoCrear) {
                   desabilitarbotonCrear();
-                  obtenerUbicaion(setLatitud,setLongitud,setDireccion,setBotonDeshabilitado,setLocation);
+                  
                   setlistaActualizar(actualizarLista_creado())
                   crearRegistro(
                     nombre,
@@ -265,7 +266,8 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
                     latitud,
                     longitud,
                     direccion,
-                    formulario_restablecido
+                    formulario_restablecido,
+                    navigation
                   );
                 }
               }}
@@ -294,9 +296,7 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
 
 
 
-          <Archivos_creados
-            listaActualizar={listaActualizar}
-          />
+      
           
         </View>
       </ScrollView>

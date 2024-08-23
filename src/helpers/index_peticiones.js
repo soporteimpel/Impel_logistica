@@ -70,7 +70,7 @@ export const obtenerToken = async()=>{
 
 export const obtenerEstadoSession = async(username, password)=>{
   try {
-      console.log('usuario ', username, ' password ', password, ' url ', url)
+      //console.log('usuario ', username, ' password ', password, ' url ', url)
       const response = await axios.post(`${url}/login?loginName=${username}&password=${password}&output=json`)
       console.log('datos inicio session ', response.data.status)
       return response.data.status
@@ -152,7 +152,7 @@ export const enviarAudioBase64 = async (id, base64Audio) => {
 
 //Crear Pqr
 
-export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setBotonDeshabilitadoCrear,audiobase64,foto_2_formulario,foto_3_formulario,foto_4_formulario,foto_5_formulario,foto_6_formulario,longitud,latitud,direccion,formulario_restablecido)=>{
+export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setBotonDeshabilitadoCrear,audiobase64,foto_2_formulario,foto_3_formulario,foto_4_formulario,foto_5_formulario,foto_6_formulario,longitud,latitud,direccion,formulario_restablecido,navigation)=>{
     try {
         //tabla a consultar 
         let tablaPqr= 'Archivos'
@@ -210,8 +210,8 @@ export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setB
         
         if(codigo_aprobado!==false && codigo_archivo!==false){
           const crearRgistro= await axios.post(`${url}/createRecord?sessionId=${token6}&output=json&useIds=true&objName=${tablaPqr}&Nombre=${nombre}&Telefono=${telefono}&Codigo=${codigo}&Longitud=${longitud}&Latitud=${latitud}&streetAddr1=${direccion}`)
-          console.log("Respues creacion ", crearRgistro.data) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
-          console.log("Respues creacion ", crearRgistro.data) 
+          //console.log("Respues creacion ", crearRgistro.data) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
+          //console.log("Respues creacion ", crearRgistro.data) 
           if(crearRgistro.data.status=='ok'){
               formulario_restablecido()
               Alert.alert(
@@ -225,7 +225,7 @@ export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setB
           }
           setBotonDeshabilitadoCrear(false)
           let idfoto_creacion = crearRgistro.data.id;
-          console.log("foto 3" + foto_3_formulario);
+          //console.log("foto 3" + foto_3_formulario);
           const fotosFormulario = {
             foto1: { foto: foto_1_formulario, campo: "foto1_base64" },
             foto2: { foto: foto_2_formulario, campo: "foto2_base64" },
@@ -286,6 +286,7 @@ export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setB
     }
 
     setBotonDeshabilitadoCrear(false)
+    navigation.navigate('Formulario')
 
 }
 
@@ -300,7 +301,7 @@ export const telefono_validar = async(telefono,setBotonDeshabilitado)=>{
       
       
       const telefono_usado= await axios.post(`${url}/selectQuery?sessionId=${token_telefono}&startRow=0&maxRows=100&query=select+id+from+${tabla_validar}+WHERE+Telefono+LIKE+'%25${telefono}%25'+ORDER+BY+id&output=json`)
-      console.log("Respues creacion ", telefono_usado.data.length) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
+      //console.log("Respues creacion ", telefono_usado.data.length) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
       if(telefono_usado.data.length>0){
         Alert.alert('Error', 'El numero ya esta en uso')
         setBotonDeshabilitado(false)
@@ -311,7 +312,7 @@ export const telefono_validar = async(telefono,setBotonDeshabilitado)=>{
           const codigo_new = await axios.post(`${url}/createRecord?sessionId=${token_telefono}&output=json&useIds=true&objName=${tabla_codigo}&Telefono=${telefono}`)
           console.log('registro de codigo creado ' + codigo_new.data.status)
           if(codigo_new.data.status==='ok'){
-            Alert.alert('Error',`El codigo a sido enviado a su telefono ${telefono}`)
+            Alert.alert('Enviado',`El codigo a sido enviado a su telefono ${telefono}`)
             setBotonDeshabilitado(false)
           }
         } catch (error) {
@@ -337,9 +338,9 @@ export const userActual = async()=>{
       //tabla a consultar 
       let tablaUser = 'USER'
       const token3 = await obtenerToken()
-      console.log('usuario', user)
+      //console.log('usuario', user)
       const responceCliente = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=30&query=select+id+from+${tablaUser}+WHERE+loginName_TXT='${user}'&output=json`)
-      console.log('Id usuario ', responceCliente.data[0][0])
+      //console.log('Id usuario ', responceCliente.data[0][0])
       return responceCliente.data[0][0]
   } catch (error) {
       console.error('Error al obtener la información de la tabla usuario:', error);
@@ -404,7 +405,7 @@ export const obtenerUbicaion = async (setLatitud,setLongitud,setDireccion,setBot
       //console.log("direccion formateada " + data.results[0].formatted_address)
       if (data.results.length > 0) {
           let ubicacionformat = data.results[0].formatted_address
-          console.log("Longitud " + ubicacionformat)
+          //console.log("Longitud " + ubicacionformat)
           ubicacionformat = encodeURIComponent(ubicacionformat)    
                         
           setDireccion(ubicacionformat);
@@ -438,5 +439,19 @@ export const datosUsuario = async()=>{
   }
 }
 
-
+export const solicitarPermisoUbicacion = async () => {
+  try {
+    // Solicitar permisos de ubicación
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert("Permiso Denegado", "Se requiere acceso a la ubicación.");
+      return false;
+    }
+    return true;
+  } catch (error) {
+    Alert.alert("Error", "No se pudo solicitar el permiso de ubicación." + error);
+    console.log("Error al solicitar permiso de ubicación: " + error);
+    return false;
+  }
+};
 

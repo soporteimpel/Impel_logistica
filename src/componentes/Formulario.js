@@ -11,10 +11,11 @@ import {
   TouchableNativeFeedback,
   Animated,
   Image,
-  BackHandler
+  BackHandler,
+  RefreshControl
 } from "react-native";
 
-import { datosUsuario } from "../helpers/index_peticiones";
+import { datosUsuario,solicitarPermisoUbicacion } from "../helpers/index_peticiones";
 
 import Archivos_creados from "./Archivos_creados";
 import { useFocusEffect } from "@react-navigation/native";
@@ -35,6 +36,25 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
 
   const [data, setData] = useState([]);
 
+  //Estado para recargar componente 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = useCallback(async ()=>{
+    setRefreshing(true)
+    try {
+      console.log("refrescando")
+      const response = await datosUsuario();
+      setData(response);
+      setlistaActualizar(actualizarLista_creado())
+    } catch (error) {
+      console.error("Error al refrescar los datos:", error);
+    }finally{
+      setRefreshing(false)
+    }
+    
+
+  },[])
+
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -49,6 +69,7 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
 
   //actualizar detalle
   useEffect(()=>{
+    solicitarPermisoUbicacion()
     const fetchData = async () => {
       try {
         const response = await datosUsuario();
@@ -101,7 +122,12 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
 
   return (
     <View style={styles.contenedor}>
-      <ScrollView style={styles.scrollViewContent}>
+      <ScrollView style={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh}/>
+        }
+      
+      >
         <View style={styles.items}>
           <Image source={require('../../assets/Log_MiiA_modulo.png')} style={styles.imagen}/>
          {data && data.length > 0 && (
@@ -251,7 +277,7 @@ const styles = StyleSheet.create({
     //fontSize: 18,
   },
   scrollViewContent: {
-    flexGrow: 1,
+    //flexGrow: 1,
 
     //alignItems: "center",
     //padding: 10,

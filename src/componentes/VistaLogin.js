@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image,Pressable,Animated,TouchableNativeFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image,Pressable,Animated,TouchableNativeFeedback,ScrollView } from 'react-native';
 import { Icon, Button,CheckBox } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerEstadoSession } from '../helpers/index_peticiones';
@@ -64,7 +64,7 @@ const VistaLogin = ({setisLoggedIn}) => {
     let numeroAletorio = Math.floor(Math.random() * 90000) + 10000;
     //convertirlo a cinco digitos
 
-    console.log("numero aleatorio ", numeroAletorio);
+    //console.log("numero aleatorio ", numeroAletorio);
     return numeroAletorio;
   };
 
@@ -119,8 +119,9 @@ const VistaLogin = ({setisLoggedIn}) => {
     }
   };
   return (
+    <ScrollView>
     <View style={styles.container}>
-
+      
       <Image source={require('../../assets/Log_MiiA_modulo.png')} style={styles.imagen}/>
       <Svg
           height="110"
@@ -193,6 +194,7 @@ const VistaLogin = ({setisLoggedIn}) => {
       </View>
       
     </View>
+    </ScrollView>
   );
 };
 
