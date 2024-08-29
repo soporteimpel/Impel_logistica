@@ -152,7 +152,7 @@ export const enviarAudioBase64 = async (id, base64Audio) => {
 
 //Crear Pqr
 
-export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setBotonDeshabilitadoCrear,audiobase64,foto_2_formulario,foto_3_formulario,foto_4_formulario,foto_5_formulario,foto_6_formulario,longitud,latitud,direccion,formulario_restablecido,navigation)=>{
+export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setBotonDeshabilitadoCrear,audiobase64,foto_2_formulario,foto_3_formulario,foto_4_formulario,foto_5_formulario,foto_6_formulario,longitud,latitud,direccion,formulario_restablecido,navigation,num_poliza,tipo_polia_id)=>{
     try {
         //tabla a consultar 
         let tablaPqr= 'Archivos'
@@ -209,7 +209,7 @@ export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setB
 
         
         if(codigo_aprobado!==false && codigo_archivo!==false){
-          const crearRgistro= await axios.post(`${url}/createRecord?sessionId=${token6}&output=json&useIds=true&objName=${tablaPqr}&Nombre=${nombre}&Telefono=${telefono}&Codigo=${codigo}&Longitud=${longitud}&Latitud=${latitud}&streetAddr1=${direccion}`)
+          const crearRgistro= await axios.post(`${url}/createRecord?sessionId=${token6}&output=json&useIds=true&objName=${tablaPqr}&Nombre=${nombre}&Telefono=${telefono}&Codigo=${codigo}&Longitud=${longitud}&Latitud=${latitud}&streetAddr1=${direccion}&No__Poliza=${num_poliza}&R56721585=${tipo_polia_id}`)
           //console.log("Respues creacion ", crearRgistro.data) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
           //console.log("Respues creacion ", crearRgistro.data) 
           if(crearRgistro.data.status=='ok'){
@@ -275,6 +275,8 @@ export const crearRegistro = async(nombre,foto_1_formulario,telefono,codigo,setB
 
         }else{
           Alert.alert('Error', 'El codigo ingresado esta errado o ya esta en uso intente de nuevo')
+          setBotonDeshabilitadoCrear(false)
+          return;
         }
 
   
@@ -302,7 +304,7 @@ export const telefono_validar = async(telefono,setBotonDeshabilitado)=>{
       
       const telefono_usado= await axios.post(`${url}/selectQuery?sessionId=${token_telefono}&startRow=0&maxRows=100&query=select+id+from+${tabla_validar}+WHERE+Telefono+LIKE+'%25${telefono}%25'+ORDER+BY+id&output=json`)
       //console.log("Respues creacion ", telefono_usado.data.length) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
-      if(telefono_usado.data.length>0){
+      if(telefono_usado.data.length>3){
         Alert.alert('Error', 'El numero ya esta en uso')
         setBotonDeshabilitado(false)
       }else{
@@ -455,3 +457,17 @@ export const solicitarPermisoUbicacion = async () => {
   }
 };
 
+export const Tipo_poliza_list = async()=>{
+  try {
+      //tabla a consultar 
+      let tablaproducto = 'Tipo_Poliza'
+      const tokenpoliza = await obtenerToken()
+      const responcePoliza_tipo= await axios.post(`${url}/selectQuery?sessionId=${tokenpoliza}&startRow=0&maxRows=300&query=select+name,+id+from+${tablaproducto}+ORDER+BY+id&output=json`)
+      //console.log("Productos creados " + responceProducto.data)
+      return responcePoliza_tipo.data
+  } catch (error) {
+      console.error('Error al obtener la información de la tabla:', error);
+      throw error;
+  }
+
+}

@@ -14,7 +14,7 @@ import {
   BackHandler
 } from "react-native";
 
-import { crearRegistro, telefono_validar,obtenerUbicaion } from "../helpers/index_peticiones";
+import { crearRegistro, telefono_validar,obtenerUbicaion,Tipo_poliza_list } from "../helpers/index_peticiones";
 import FotoPQR_creacion_1 from "./Foto1";
 import FotoPQR_creacion_2 from "./Foto2";
 import FotoPQR_creacion_3 from "./Foto3";
@@ -26,6 +26,7 @@ import Ubicacion from "./Ubicacion";
 import Archivos_creados from "./Archivos_creados";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomAlert from "./CustomAlert";
+import Tipo_poliza from "./Tipo_poliza";
 
 const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
  
@@ -33,6 +34,7 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
   const [telefono, setTelefono] = useState("");
   const [pqrCreada, setpqrCreada] = useState("");
   const [codigo, setcodigo] = useState(0);
+  const [num_poliza,setNum_poliza] = useState("");
 
   //Estado para boton
   const [botonDeshabilitado, setBotonDeshabilitado] = useState(false);
@@ -54,6 +56,14 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
   const [latitud,setLatitud] =useState("")
   const [direccion, setDireccion] = useState(null);
   const [location,setLocation] =useState(null)
+
+  //Estados consulta tipo poliza
+  const [tipo_poliza_select,setTipo_poliza_select] = useState([])
+  const [modal_tipo_poliza,setModal_tipo_poliza]   = useState(false)
+  const [tipo_poliza_name,setTipo_poliza_name]     = useState('')
+  const [tipo_polia_id,setTipo_poliza_id]          = useState('')
+
+
 
 
   //Reestablecer formulario
@@ -196,7 +206,56 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
               value={telefono}
               onChangeText={setTelefono}
             />
+
+            <TextInput
+              style={styles.imput}
+              placeholder="Número de Póliza"
+              keyboardType="numeric"
+              value={num_poliza}
+              onChangeText={setNum_poliza}
+            />
           </View>
+
+          <View style={styles.campo}>
+
+          <Text style={styles.label}>Tipo Poliza</Text>
+          <Pressable
+              style={styles.botonSeleccione}
+              onPress={() => {
+              setTipo_poliza_select(Tipo_poliza_list());
+              setModal_tipo_poliza(true);
+              //console.log('El valor de clasificacion es ',clasificacionSelect )
+              }}
+          >
+              <Text style={styles.textbotonSelect}>
+              {tipo_poliza_name == "" ? "Seleccione" : tipo_poliza_name}
+              </Text>
+          </Pressable>
+          </View>
+
+          {modal_tipo_poliza && (
+          <Modal
+          animationType="slide"
+          visible={modal_tipo_poliza}
+          >
+          <Tipo_poliza
+            setModal_tipo_poliza={setModal_tipo_poliza}
+            tipo_poliza_select={tipo_poliza_select}
+            setTipo_poliza_name={setTipo_poliza_name}
+            setTipo_poliza_id={setTipo_poliza_id}
+          />
+
+
+          </Modal>
+          )}
+
+
+
+
+
+
+
+
           <View style={styles.foto_contenedor}>
             <FotoPQR_creacion_1 setfoto_1_formulario={setfoto_1_formulario}  setResetFoto1={setResetFoto1}/>
             <FotoPQR_creacion_2 setfoto_2_formulario={setfoto_2_formulario}  setResetFoto2={setResetFoto2}/>
@@ -267,7 +326,9 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
                     longitud,
                     direccion,
                     formulario_restablecido,
-                    navigation
+                    navigation,
+                    num_poliza,
+                    tipo_polia_id
                   );
                 }
               }}
@@ -280,7 +341,7 @@ const Formulario2 = ({ listaActualizar,setlistaActualizar,navigation }) => {
 
           
 
-          <View style={styles.botoncontanier}>
+          <View style={styles.botoncontanier2}>
             <TouchableNativeFeedback
               onPressIn={() => animacionEntrada()}
               onPressOut={() => animacionSalida()}
@@ -393,6 +454,10 @@ const styles = StyleSheet.create({
   botoncontanier: {
     marginTop: 5, // Ajusta este valor para mover el botón más abajo
     alignItems: "center",
+  },botoncontanier2: {
+    marginTop: 5, // Ajusta este valor para mover el botón más abajo
+    alignItems: "center",
+    marginBottom:30
   },
   botonInico: {
     marginTop: "10%",

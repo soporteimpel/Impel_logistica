@@ -31,10 +31,17 @@ const FotoPQR_creacion_3 = ({ urlImagen,setfoto_3_formulario,setResetFoto3 }) =>
         throw new Error('El id o la foto deben estar definidos.');
       }
 
+      // Obtén las dimensiones originales de la imagen
+      const { width: originalWidth, height: originalHeight } = await getImageDimensions(uri);
+
+      // Calcula las nuevas dimensiones manteniendo las proporciones
+      const newWidth = 400;
+      const newHeight = (originalHeight / originalWidth) * newWidth;
+
       // Comprimir la imagen antes de convertirla en base64
       const compressedImage = await ImageManipulator.manipulateAsync(
         uri,
-        [{ resize: { width: 400, height: 400 } }],
+        [{ resize: { width: newWidth, height: newHeight } }],
         { format: 'jpeg', compress: 0.8 }
       );
 
@@ -106,7 +113,20 @@ const FotoPQR_creacion_3 = ({ urlImagen,setfoto_3_formulario,setResetFoto3 }) =>
   };
 
 
-  
+    //obtener dimensiones originales de la imagen 
+    const getImageDimensions = async (uri) => {
+      return new Promise((resolve, reject) => {
+          Image.getSize(
+              uri,
+              (width, height) => {
+                  resolve({ width, height });
+              },
+              (error) => {
+                  reject(error);
+              }
+          );
+      });
+  };
 
 
   return (
