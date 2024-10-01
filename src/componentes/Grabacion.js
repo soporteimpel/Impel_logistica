@@ -50,7 +50,7 @@ const Grabacion = ({setAudioBase64}) => {
     setRecordingUri(uri);
     console.log('Grabación guardada en:', uri);
     const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-    console.log("el base 64 es " + base64);
+    //console.log("el base 64 es " + base64);
     setAudioBase64(base64);
 
     //Detener la animacion de sonido

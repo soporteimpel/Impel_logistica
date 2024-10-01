@@ -35,14 +35,14 @@ const FotoPQR_creacion_5 = ({ urlImagen,setfoto_5_formulario,setResetFoto5 }) =>
       const { width: originalWidth, height: originalHeight } = await getImageDimensions(uri);
 
       // Calcula las nuevas dimensiones manteniendo las proporciones
-      const newWidth = 400;
+      const newWidth = 800;
       const newHeight = (originalHeight / originalWidth) * newWidth;
 
       // Comprimir la imagen antes de convertirla en base64
       const compressedImage = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: newWidth, height: newHeight } }],
-        { format: 'jpeg', compress: 0.8 }
+        { format: 'png', compress: 1 }
       );
 
       const base64Image = await encodeImageToBase64(compressedImage.uri);

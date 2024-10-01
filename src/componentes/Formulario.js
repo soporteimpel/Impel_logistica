@@ -20,6 +20,7 @@ import { datosUsuario,solicitarPermisoUbicacion } from "../helpers/index_peticio
 import Archivos_creados from "./Archivos_creados";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomAlert from "./CustomAlert";
+import Asistencia_registrada from "./Asistencia_registrada";
 
 const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn,setModal }) => {
 
@@ -152,17 +153,41 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
 
 
         <View style={styles.contenedorboton}>
-        <Pressable style={styles.botonLogin} onPress={() => {
-            navigation.navigate('Formulario2')
-          }}
+          <Pressable style={styles.botonLogin} onPress={() => {
+              navigation.navigate('Formulario2')
+            }}
 
-          
-          
-          >
-          <Text style={styles.textoboton}>Crear</Text>
-        </Pressable>
+            
+            
+            >
+            <Text style={styles.textoboton}>Crear</Text>
+          </Pressable>
+
+        </View>
+
+
+      <View style={styles.items}>
+        <Text style={styles.datosText}>Registro de Asistencia</Text>
+        <Asistencia_registrada
+          listaActualizar={listaActualizar}
+        />
 
       </View>
+
+      <View style={styles.contenedorboton}>
+          <Pressable style={styles.botonLogin} onPress={() => {
+              navigation.navigate('Formulario_asistncia')
+            }}
+
+            
+            
+            >
+            <Text style={styles.textoboton}>Registrar</Text>
+          </Pressable>
+
+        </View>
+
+      
       </ScrollView>
 
       
@@ -171,6 +196,9 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
         onClose={handleCloseAlert}
         onConfirm={handleConfirmAlert}
       />
+
+
+
     </View>
   );
 };

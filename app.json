@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Impel_francomer",
+    "name": "Miia Francomer",
     "slug": "Impel_francomer",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,8 +19,8 @@
         "foregroundImage": "./assets/Logo_Miia_Bajo_peso.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.isildur1790.Impel_francomer",
-      "versionCode": 7,
+      "package": "com.isildur1790.Miia_Francomer",
+      "versionCode": 1,
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"

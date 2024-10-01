@@ -3,6 +3,7 @@ import React,{useState} from 'react';
 import { StyleSheet, Text, View,SafeAreaView,StatusBar,Modal} from 'react-native';
 import Formulario from './src/componentes/Formulario';
 import Formulario2 from './src/componentes/Formulario2';
+import Formulario_asistncia from './src/componentes/Formulario_asistncia';
 import VistaLogin from './src/componentes/VistaLogin';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -52,6 +53,21 @@ export default function App() {
             >
               {(props) => (
                   <Formulario2
+                    {...props}
+                    listaActualizar={listaActualizar}
+                    setlistaActualizar={setlistaActualizar}
+                  />
+                )}
+
+
+            </Stack.Screen>
+
+            <Stack.Screen
+              name='Formulario_asistncia'
+              options={{ headerShown: false }}
+            >
+              {(props) => (
+                  <Formulario_asistncia
                     {...props}
                     listaActualizar={listaActualizar}
                     setlistaActualizar={setlistaActualizar}

@@ -471,3 +471,173 @@ export const Tipo_poliza_list = async()=>{
   }
 
 }
+
+
+
+//Lista de asistencia registrada
+
+export const asistenciaList = async()=>{
+  try {
+      //tabla a consultar 
+      let tablaArchivos= 'Asistencia'
+      const token3 = await obtenerToken()
+      //R52302897 realacion cliente 
+      const idusuario = await userActual()
+      
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+creador_txt,+Tipo_asistencia_txt,+name,+createdAt,+urlfoto+from+${tablaArchivos}+WHERE+createdBy=${idusuario}+ORDER+BY+id+DESC&output=json`)
+      console.log('Lista asistencia supervisor', responceArchivos.data)
+      return responceArchivos.data
+  } catch (error) {
+      console.error('Error al obtener la información de los archivos :', error);
+      throw error;
+  }
+
+}
+
+//Lista de asistencia registrada
+
+export const asesores_asistencia = async(id_asistencia)=>{
+  try {
+      //tabla a consultar 
+      let tablaArchivos= 'Asistencia'
+      const token3 = await obtenerToken()
+      //R52302897 realacion cliente 
+      console.log("id asistencia " + id_asistencia);
+      
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+Lista_id_asesores+from+${tablaArchivos}+WHERE+id=${id_asistencia}+ORDER+BY+id+DESC&output=json`)
+      
+      let datos = responceArchivos.data
+      datos = datos[0][0].split(',')
+      
+      console.log('Lista asesores supervisor', datos)
+      return datos
+  } catch (error) {
+      console.error('Error al obtener la información de los usuarios :', error);
+      throw error;
+  }
+
+}
+
+//Lista de asistencia registrada
+
+export const asesores_por_supervisor = async()=>{
+  try {
+      //tabla a consultar 
+      let tablaArchivos= 'Asesor'
+      const token3 = await obtenerToken()
+      //R52302897 realacion cliente 
+      
+      const idusuario = await userActual()
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+Nombre,id+from+${tablaArchivos}+WHERE+R57345067=${idusuario}+ORDER+BY+id+DESC&output=json`)
+      
+      let datos = responceArchivos.data
+      //datos = datos[0][0].split(',')
+      
+      console.log('Lista asesores supervisor', datos)
+      return datos
+  } catch (error) {
+      console.error('Error al obtener la información de los usuarios :', error);
+      throw error;
+  }
+
+}
+
+
+
+
+
+//Crear regsitro de asistencia 
+
+export const crearRegistroAsistencia = async(tipoInformacion,foto_1_formulario,selectedString,setBotonDeshabilitadoCrear,formulario_restablecido,navigation)=>{
+  try {
+      //tabla a consultar 
+      let tablaPqr= 'Asistencia'
+      const token6 = await obtenerToken()
+
+
+        const crearRgistro= await axios.post(`${url}/createRecord?sessionId=${token6}&output=json&useIds=true&objName=${tablaPqr}&Tipo_de_Asistencia=${tipoInformacion}&Asistencia_app=${selectedString}`)
+        //console.log("Respues creacion ", crearRgistro.data) 
+        if(crearRgistro.data.status=='ok'){
+            formulario_restablecido()
+            Alert.alert(
+                'Registro creado',
+                'Gracias. ',
+                [
+                    {text:'OK'}
+                ]
+                )
+
+        }
+        setBotonDeshabilitadoCrear(false)
+        let idfoto_creacion = crearRgistro.data.id;
+        //console.log("foto 3" + foto_3_formulario);
+        const fotosFormulario = {
+          foto1: { foto: foto_1_formulario, campo: "Foto_base64" }
+
+        };
+
+        for(const key in fotosFormulario){
+          if (fotosFormulario.hasOwnProperty(key)) {
+            if(fotosFormulario[key].foto!=="" && fotosFormulario[key].foto!==undefined){
+              try {
+                await enviarImagenBase64_asistencia(idfoto_creacion,fotosFormulario[key].foto,fotosFormulario[key].campo)
+              } catch (error) {
+                Alert.alert(
+                  "Error",
+                  "La foto no pudo ser enviada " + fotosFormulario[key],
+                  [
+                    {text:'OK'}
+                  ]
+                )
+              }
+
+            }
+          }
+
+
+        }      
+  } catch (error) {
+      console.error('No fue posible crear :', error);
+      Alert.alert('Error','No es posible crear, intente mas tarde. ')
+      throw error;
+  }
+
+  setBotonDeshabilitadoCrear(false)
+  navigation.navigate('Formulario')
+
+}
+
+
+
+//Enviar imagen base 64
+
+export const enviarImagenBase64_asistencia = async (id, base64Image,campo) => {
+  try {
+      
+      const token = await obtenerToken()
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token}&objName=Asistencia`;
+
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Asistencia" id="${id}" useIds="true">
+        <Field name="${campo}">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64 de asistencia:', error);
+    throw error;
+  }
+};

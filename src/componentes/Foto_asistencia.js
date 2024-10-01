@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-const FotoPQR_creacion_1 = ({ urlImagen,setfoto_1_formulario,setResetFoto1 }) => {
+const Foto_asistencia = ({ urlImagen,setfoto_1_formulario,setResetFoto1 }) => {
   const [photo, setPhoto] = useState(null);
   const [id, setId] = useState(null);
   
@@ -137,7 +137,7 @@ const FotoPQR_creacion_1 = ({ urlImagen,setfoto_1_formulario,setResetFoto1 }) =>
               {(photo || (urlImagen && urlImagen !== '')) ? (
                 <Image source={{ uri: photo ? photo.uri : urlImagen }} style={styles.image} />
               ) : (
-                <Icon name='image' size={50} color="#cfd9ec" style={styles.placeholderIcon}/>
+                <Icon name='image' size={100} color="#cfd9ec" style={styles.placeholderIcon}/>
               )}
           </Pressable>
           {false &&(
@@ -149,7 +149,7 @@ const FotoPQR_creacion_1 = ({ urlImagen,setfoto_1_formulario,setResetFoto1 }) =>
           
           
       </View>
-      <Text style={styles.texto}>Póliza 1</Text>
+      <Text style={styles.texto}>Foto</Text>
 
     </View>
   );
@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',  // Alinea verticalmente
   },
   image: {
-    width: 90,
-    height: 90,
+    width: 200,
+    height: 200,
     borderRadius: 10,
     marginVertical: 20,
     alignSelf: 'center',
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#eff2f9",
     padding: 10,
     borderRadius: 10,
-    width: 90,
-    height:90,
+    width: 200,
+    height:200,
     justifyContent:'center',
     position:'relative'
 
@@ -202,4 +202,6 @@ const styles = StyleSheet.create({
   }
 });
 
-export default FotoPQR_creacion_1
+export default Foto_asistencia
+
+
