@@ -43,7 +43,7 @@ const VistaLogin = ({setisLoggedIn}) => {
     // Recuperar datos del usuario almacenados al cargar el componente
     const retrieveUserData = async () => {
       try {
-        const storedUserData = await AsyncStorage.getItem('userData_francomer');
+        const storedUserData = await AsyncStorage.getItem('userData_impel_logistica');
         //console.log('Stored User Data:', storedUserData);
         if (storedUserData) {
           const { username, password, rememberPassword } = JSON.parse(storedUserData);
@@ -78,7 +78,7 @@ const VistaLogin = ({setisLoggedIn}) => {
 
   const saveUserData = async (userData) => {
     try {
-        await AsyncStorage.setItem('currentUserData_francomer', JSON.stringify(userData));
+        await AsyncStorage.setItem('currentuserData_impel_logistica', JSON.stringify(userData));
         //console.log('Stored User Data:', userData);
     } catch (error) {
         console.error('Error al almacenar datos del usuario actual:', error);
@@ -107,7 +107,7 @@ const VistaLogin = ({setisLoggedIn}) => {
         if (rememberPassword) {
           const userDataToStore = { username, password, rememberPassword };
           const userDataString = JSON.stringify(userDataToStore);
-          await AsyncStorage.setItem('userData_francomer', userDataString);
+          await AsyncStorage.setItem('userData_impel_logistica', userDataString);
           //console.log('Stored User Data:', userDataToStore);
         }
       } else {
@@ -122,7 +122,7 @@ const VistaLogin = ({setisLoggedIn}) => {
     <ScrollView>
     <View style={styles.container}>
       
-      <Image source={require('../../assets/Log_MiiA_modulo.png')} style={styles.imagen}/>
+      <Image source={require('../../assets/impel_log_new.png')} style={styles.imagen}/>
       <Svg
           height="110"
           width="100%"
@@ -130,7 +130,7 @@ const VistaLogin = ({setisLoggedIn}) => {
           style={styles.wave}
         >
           <Path
-            fill="#ff2301" // Color del fondo ondulado
+            fill="#0057A0" // Color del fondo ondulado
             d="M0,160
        C480,320 960,0 1440,160
        L1440,320
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection:'column'
     
   },container2: {
-    backgroundColor:"#ff2301",
+    backgroundColor:"#0057A0",
     width:'100%',
     alignItems: 'center',
     height:'100%',
@@ -259,8 +259,8 @@ const styles = StyleSheet.create({
   imagen:{
     marginTop:'20%',
     marginBottom:'10%',
-    width:170,
-    height:170
+    width:200,
+    height:200
   },wave: {
     
     top: 0,
@@ -277,10 +277,10 @@ const styles = StyleSheet.create({
     width: 200,
     borderRadius: 10,
     borderWidth:2,
-    borderColor:"#ff2301"
+    borderColor:"#0057A0"
   },
   textoboton: {
-    color: "#ff2301",
+    color: "#0057A0",
     fontWeight: "bold",
     //textTransform: "uppercase",
     textAlign: "center",

@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Miia Francomer",
-    "slug": "Impel_francomer",
+    "name": "Intempo Logistica",
+    "slug": "intempo-logistica",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Logo_Miia_Bajo_peso.png",
+    "icon": "./assets/impel_log_new.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/Logo_Miia_Bajo_peso.png",
+      "image": "./assets/impel_log_new.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,10 +16,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/Logo_Miia_Bajo_peso.png",
+        "foregroundImage": "./assets/impel_log_new.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.isildur1790.Miia_Francomer",
+      "package": "com.isildur1790.Intempo_Logistica",
       "versionCode": 1,
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -31,8 +31,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "c4895a9e-e638-4e7d-969c-ba31aaa5893d"
+        "projectId": "99f1f425-a91f-4065-ad11-44c3374f31ec"
       }
-    }
+    },
+    "owner": "isildur1790"
   }
 }

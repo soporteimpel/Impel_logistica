@@ -1,14 +1,19 @@
 
 import React,{useState} from 'react';
-import { StyleSheet, Text, View,SafeAreaView,StatusBar,Modal} from 'react-native';
+import { StyleSheet,SafeAreaView,StatusBar} from 'react-native';
 import Formulario from './src/componentes/Formulario';
 import Formulario2 from './src/componentes/Formulario2';
 import Formulario_asistncia from './src/componentes/Formulario_asistncia';
 import VistaLogin from './src/componentes/VistaLogin';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Pantala_configuracion from './src/componentes/Pantala_configuracion';
+import Perfil from './src/componentes/Perfil';
+import Documento_cargue from './src/componentes/Documento_cargue';
 
 const Stack = createStackNavigator()
+
+
 
 export default function App() {
   const [listaActualizar,setlistaActualizar] = useState(0)
@@ -30,6 +35,8 @@ export default function App() {
             </Stack.Screen>
           ) : (
             <>
+
+
             <Stack.Screen
               name='Formulario'
               options={{headerShown:false}}
@@ -77,6 +84,45 @@ export default function App() {
 
             </Stack.Screen>
 
+            <Stack.Screen
+              name='Configuracion' // Nombre que usarás para navegar a esta pantalla
+              options={{ headerShown: false }} // Ocultar el encabezado si es necesario
+            >
+              {(props) => (
+                  <Pantala_configuracion
+                    {...props}
+                    listaActualizar={listaActualizar}
+                    setlistaActualizar={setlistaActualizar}
+                  />
+                )}
+            </Stack.Screen>
+
+            <Stack.Screen
+              name='Perfil' // Nombre que usarás para navegar a esta pantalla
+              options={{ headerShown: false }} // Ocultar el encabezado si es necesario
+            >
+              {(props) => (
+                  <Perfil
+                    {...props}
+                    listaActualizar={listaActualizar}
+                    setlistaActualizar={setlistaActualizar}
+                  />
+                )}
+            </Stack.Screen>
+
+            <Stack.Screen
+              name='Documento_cargue' // Nombre que usarás para navegar a esta pantalla
+              options={{ headerShown: false }} // Ocultar el encabezado si es necesario
+            >
+              {(props) => (
+                  <Documento_cargue
+                    {...props}
+                    listaActualizar={listaActualizar}
+                    setlistaActualizar={setlistaActualizar}
+                  />
+                )}
+            </Stack.Screen>
+
           </>
           )}
         </Stack.Navigator>
@@ -96,5 +142,12 @@ const styles = StyleSheet.create({
     
   },
 });
+
+
+
+
+
+
+
 
 

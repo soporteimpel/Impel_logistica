@@ -11,24 +11,36 @@ import {
   import globalstyles from '../styles';
   import { archivosList } from '../helpers/index_peticiones';
   import Archivo_detalle from './Archivo_detalle';
+
   //import DetallePqr from "./DetallePqr";
-const Archivos_creados = ({listaActualizar}) => {
+const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navigation,setlistaActualizar}) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]); 
     const [modalDetalle,setmodalDetalle] = useState(false)
-    const [num_Archivo,setnum_Archivo] = useState('')
-    const [nombreArchivo,setNombreArchivo] = useState('')
-    const [estadoArchivo,setestadoArchivo] = useState('')
-    const [telefono,setTelefono] = useState('')
-    const [fechaArchivo,setfechaArchivo] = useState('')
+
     const [nombreCliente,setNombreCliente] = useState('')
 
-  
+    //nuevos estados para la app logistica 
+    const [id_despacho,setId_despacho] = useState("")
+    const [estado,setEstado] = useState("")
+    const [despachoName,setDespachoName] = useState("")
+    const [placa,setPlaca] = useState("")
+    const [fechaManifiesto,setFechaManifiesto] = useState("")
+    const [numero_manifiesto,setNumero_manifiesto]=useState("")
+    const [origen,setOrigen]=useState("")
+    const [direccion_origen,setDireccion_origen] = useState("")
+    const [destino,setDestino] = useState("")
+    const [direccion_destino,setDireccion_destino] = useState("")
+    const [fecha_cargue,setFecha_cargue] = useState("")
+    const [link_inventario,setLink_inventario] = useState("")
+
     useEffect(() => {
       async function fetchData() {
         try {
           const response = await archivosList();
           setData(response);
+          setFilteredData(response)
         } catch (error) {
           console.log("Error al obtener los datos:", error);
         } finally {
@@ -37,6 +49,84 @@ const Archivos_creados = ({listaActualizar}) => {
       }
       fetchData();
     }, [listaActualizar,modalDetalle]);
+
+    useEffect(() => {
+      if (filtroDepacho && typeof filtroDepacho === 'string') {
+        const estadoNormalizado = filtroDepacho
+          .normalize ? filtroDepacho.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : filtroDepacho;
+    
+        if (estadoNormalizado.toLowerCase() === 'en transito') {
+          // Filtra los registros con el estado 'En Tránsito'
+          const datosFiltrados = data.filter((item) => {
+            if (item[4] && typeof item[4] === 'string') {
+              const estadoItem = item[4]
+                .normalize ? item[4].normalize('NFD').replace(/[\u0300-\u036f]/g, '') : item[4];
+    
+              return estadoItem.toLowerCase() === 'en transito';
+            }
+            return false;
+          });
+    
+          setFilteredData(datosFiltrados);
+    
+        } else if (estadoNormalizado.toLowerCase() === 'finalizado') {
+          // Filtra los registros con estado 'Cumplido', 'Finalizado' o 'Finalizado Contenedor Devuelto'
+          const datosFiltrados = data.filter((item) => {
+            if (item[4] && typeof item[4] === 'string') {
+              const estadoItem = item[4]
+                .normalize ? item[4].normalize('NFD').replace(/[\u0300-\u036f]/g, '') : item[4];
+    
+              // Verifica si el estado es uno de los valores deseados
+              return ['cumplido', 'finalizado', 'finalizado contenedor devuelto'].includes(estadoItem.toLowerCase());
+            }
+            return false;
+          });
+    
+          setFilteredData(datosFiltrados);
+    
+        }else if (estadoNormalizado.toLowerCase() === 'asignado') {
+          // Filtra los registros con estado 'Cumplido', 'Finalizado' o 'Finalizado Contenedor Devuelto'
+          const datosFiltrados = data.filter((item) => {
+            if (item[4] && typeof item[4] === 'string') {
+              const estadoItem = item[4]
+                .normalize ? item[4].normalize('NFD').replace(/[\u0300-\u036f]/g, '') : item[4];
+              console.log('filtrando estado ' + estadoItem.toLowerCase())
+              // Verifica si el estado es uno de los valores deseados
+              return ['habilitado para cargue','confirmado sin inspeccion','asignado','confirmado','asignado sin inventario'].includes(estadoItem.toLowerCase());
+            }
+            return false;
+          });
+    
+          setFilteredData(datosFiltrados);
+    
+        } else if (estadoNormalizado.toLowerCase() === 'entregado') {
+          // Filtra los registros con estado 'Cumplido', 'Finalizado' o 'Finalizado Contenedor Devuelto'
+          const datosFiltrados = data.filter((item) => {
+            if (item[4] && typeof item[4] === 'string') {
+              const estadoItem = item[4]
+                .normalize ? item[4].normalize('NFD').replace(/[\u0300-\u036f]/g, '') : item[4];
+    
+              // Verifica si el estado es uno de los valores deseados
+              return ['entregado','cumplido'].includes(estadoItem.toLowerCase());
+            }
+            return false;
+          });
+    
+          setFilteredData(datosFiltrados);
+    
+        } else {
+          // Si no es 'En Tránsito' ni 'Finalizado', muestra todos los datos
+          setFilteredData(data);
+        }
+      } else {
+        // Si no hay filtro, muestra todos los datos
+        setFilteredData(data);
+      }
+    }, [filtroDepacho, data,listaActualizar]);
+    
+    
+
+
   
     return (
       <View style={styles.contenedor}>
@@ -46,25 +136,37 @@ const Archivos_creados = ({listaActualizar}) => {
           {loading ? (
             <Text>Cargando...</Text>
           ) : (
-            data.map((item, index) => (
+            filteredData.map((item, index) => (
               <Pressable
                 key={index}
                 style={styles.boton}
                 onPress={() => {
-                  console.log(item[0])
+                  console.log("id despacho " + item[0])
                   setmodalDetalle(true)
-                  setNombreArchivo(item[1])
-                  setnum_Archivo(item[2])
-                  setTelefono(item[3])
-                  setestadoArchivo(item[4])
-                  setfechaArchivo(item[5])
-                  setNombreCliente(item[6])
-
+                  setId_despacho(item[0])
+                  setEstado(item[4])
+                  setDespachoName(item[1])
+                  setPlaca(item[3])
+                  setPlacaVechiculo(item[3])
+                  setFechaManifiesto(item[7])
+                  setNumero_manifiesto(item[8])
+                  setOrigen(item[9])
+                  setDireccion_origen(item[10])
+                  setDestino(item[11])
+                  setDireccion_destino(item[12])
+                  setFecha_cargue(item[13])
+                  setLink_inventario(item[14])
   
                   
                 }}
               >
-                <Text style={styles.contenedorLista}>{item[2]}. {item[1]}</Text>
+                <Text style={styles.contenedorLista}> 
+                  Estado: <Text style={styles.contenedorLista_valor}>{item[4]}</Text>{"\n"} 
+                  Despacho: <Text style={styles.contenedorLista_valor}>{item[1]}</Text>{"\n"} 
+                  Placa: <Text style={styles.contenedorLista_valor}>{item[3]}</Text> 
+                  
+                </Text>
+                <Text style={styles.fecha}>{item[5]}</Text>
               </Pressable>
             ))
           )}
@@ -78,13 +180,21 @@ const Archivos_creados = ({listaActualizar}) => {
               
               <Archivo_detalle
                 setmodalDetalle={setmodalDetalle}
-                nombreArchivo={nombreArchivo}
-                num_Archivo={num_Archivo}
-                telefono={telefono}
-                estadoArchivo={estadoArchivo}
-                fechaArchivo={fechaArchivo}
-                nombreCliente={nombreCliente}
-
+                estado={estado}
+                despachoName={despachoName}
+                placa={placa}
+                fechaManifiesto={fechaManifiesto}
+                numero_manifiesto={numero_manifiesto}
+                origen={origen}
+                direccion_origen={direccion_origen}
+                destino={destino}
+                direccion_destino={direccion_destino}
+                fecha_cargue={fecha_cargue}
+                link_inventario={link_inventario}
+                id_despacho={id_despacho}
+                navigation={navigation}
+                setlistaActualizar={setlistaActualizar}
+                listaActualizar={listaActualizar}
               />
               
             </Modal>
@@ -103,8 +213,8 @@ const Archivos_creados = ({listaActualizar}) => {
     contenedor: {
       ...globalstyles.contenedor,
       transform: [{ translateY: 0 }],
-      width: "80%",
-      height:300,
+      width: "90%",
+      height:"50",
       flex:1,
       marginTop:10,
       marginBottom:20
@@ -117,6 +227,19 @@ const Archivos_creados = ({listaActualizar}) => {
       borderRadius: 10,
       color: "#000",
       fontWeight: "bold",
-    },
+    },   fecha: {
+      position: 'absolute',
+      bottom: 10,
+      right: 10,
+      fontSize: 12,
+      color: "#888",
+    },contenedorLista_valor: {
+      backgroundColor: "#f5f5f5",
+      padding: 10,
+      marginBottom: '3%',
+      borderRadius: 10,
+      color: "#000",
+      fontWeight: "400",
+    }
   });
 export default Archivos_creados

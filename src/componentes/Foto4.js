@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Image, StyleSheet, Pressable,Text } from 'react-native';
+import { View, Button, Image, StyleSheet, Pressable,Text,ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const FotoPQR_creacion_4 = ({ urlImagen,setfoto_4_formulario,setResetFoto4 }) => {
   const [photo, setPhoto] = useState(null);
   const [id, setId] = useState(null);
+  const [fotocargando,setFotocargando] = useState(false)
   
   const resetFoto=()=>{
     setPhoto(null)
@@ -25,6 +26,7 @@ const FotoPQR_creacion_4 = ({ urlImagen,setfoto_4_formulario,setResetFoto4 }) =>
 
   const enviarImagen = async (uri) => {
     try {
+      setFotocargando(true)
         console.log('Id ', id)
         console.log('uri ', uri)
       if (!uri) {
@@ -53,6 +55,8 @@ const FotoPQR_creacion_4 = ({ urlImagen,setfoto_4_formulario,setResetFoto4 }) =>
 
     } catch (error) {
       console.error('Error al enviar la imagen:', error.message);
+    }finally {
+      setFotocargando(false); // Asegúrate de finalizar la carga
     }
   };
 
@@ -134,13 +138,19 @@ const FotoPQR_creacion_4 = ({ urlImagen,setfoto_4_formulario,setResetFoto4 }) =>
        
       {/* <Button title="Tomar Foto" onPress={openImagePicker} />  boton original */}
       <View style={styles.buttonContainer}>
-          <Pressable style={styles.boton} onPress={()=>openImagePicker('camera')}>
+      <Pressable style={styles.boton} onPress={() => openImagePicker('camera')}>
+          {fotocargando ? (
+            <ActivityIndicator size="large" color="#0057A0" />
+          ) : (
+            <>
               {(photo || (urlImagen && urlImagen !== '')) ? (
                 <Image source={{ uri: photo ? photo.uri : urlImagen }} style={styles.image} />
               ) : (
-                <Icon name='image' size={50} color="#cfd9ec" style={styles.placeholderIcon}/>
+                <Icon name='image' size={50} color="#cfd9ec" style={styles.placeholderIcon} />
               )}
-          </Pressable>
+            </>
+          )}
+        </Pressable>
           {false&&(
             <Pressable style={styles.boton_select_image} onPress={()=>openImagePicker('gallery')}>
               <Icon name="add-photo-alternate" size={20} color="#fff" />
@@ -150,7 +160,7 @@ const FotoPQR_creacion_4 = ({ urlImagen,setfoto_4_formulario,setResetFoto4 }) =>
 
           
       </View>
-      <Text style={styles.texto}>Cédula 2</Text>
+      <Text style={styles.texto}>Foto 4</Text>
 
     </View>
   );

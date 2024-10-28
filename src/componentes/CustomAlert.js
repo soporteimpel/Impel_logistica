@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: 'white',
-    borderColor: 'red',
+    borderColor: '#0057A0',
     borderWidth: 1,
     borderRadius: 5,
     paddingVertical: 10,
@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   cancelButtonText: {
-    color: 'red',
+    color: '#0057A0',
     fontWeight: 'bold',
     
   },
   confirmButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#0057A0',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,

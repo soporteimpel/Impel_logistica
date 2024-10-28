@@ -466,10 +466,10 @@ const styles = StyleSheet.create({
     width: 200,
     borderRadius: 10,
     borderWidth:2,
-    borderColor:"#ff2301"
+    borderColor:"#0057A0"
   },
   textoboton: {
-    color: "#ff2301",
+    color: "#0057A0",
     fontWeight: "bold",
     //textTransform: "uppercase",
     textAlign: "center",

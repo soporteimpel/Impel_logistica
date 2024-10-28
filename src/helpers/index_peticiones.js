@@ -3,7 +3,9 @@ import { Alert } from "react-native";
 import { err } from "react-native-svg";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import * as Location from 'expo-location';
+import { XMLParser } from 'fast-xml-parser'; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import queryString from "query-string";
 //import AsyncStorage from "@react-native-async-storage/async-storage";
 const url = "https://www.impeltechnology.com/rest/api"
 
@@ -17,7 +19,7 @@ const url = "https://www.impeltechnology.com/rest/api"
 // Función para obtener los datos del usuario almacenados en AsyncStorage
 const getStoredUserData = async () => {
   try {
-      const storedUserData = await AsyncStorage.getItem('currentUserData_francomer');
+      const storedUserData = await AsyncStorage.getItem('currentuserData_impel_logistica');
       if (storedUserData) {
           const { username, password } = JSON.parse(storedUserData);
           return { username, password };
@@ -340,12 +342,12 @@ export const userActual = async()=>{
       //tabla a consultar 
       let tablaUser = 'USER'
       const token3 = await obtenerToken()
-      //console.log('usuario', user)
+      console.log("usuario " +  user)
       const responceCliente = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=30&query=select+id+from+${tablaUser}+WHERE+loginName_TXT='${user}'&output=json`)
-      //console.log('Id usuario ', responceCliente.data[0][0])
+      //console.log('Id usuario ', responceCliente.data)
       return responceCliente.data[0][0]
   } catch (error) {
-      console.error('Error al obtener la información de la tabla usuario:', error);
+     console.error('Error al obtener la información de la tabla usuario funcion userActual:' + error)
       if(error.response){
           console.error('Error de respuesta:', error.response.data);
           console.error('Código de estado HTTP:', error.response.status);
@@ -364,16 +366,16 @@ export const userActual = async()=>{
 export const archivosList = async()=>{
   try {
       //tabla a consultar 
-      let tablaArchivos= 'Archivos'
+      let tablaArchivos= 'Despacho'
       const token3 = await obtenerToken()
       //R52302897 realacion cliente 
       const idusuario = await userActual()
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Telefono,+Estadotxt,+createdAt,+Nombre+from+${tablaArchivos}+WHERE+createdBy=${idusuario}+ORDER+BY+id+DESC&output=json`)
-      //console.log('Lista pqr este es el cliente ', responceArchivos.data)
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo+from+${tablaArchivos}+WHERE+id_user_vehiculo=${idusuario}+ORDER+BY+id+DESC&output=json`)
+      //console.log('Lista despachos este es el conductor ', responceArchivos.data)
       return responceArchivos.data
   } catch (error) {
-      console.error('Error al obtener la información de los archivos :', error);
+      console.error('Error al obtener la información de los archivos 1 :', error);
       throw error;
   }
 
@@ -433,13 +435,29 @@ export const datosUsuario = async()=>{
     const tokenusuario = await obtenerToken()
     const idusuario = await userActual()
     const tablaUsuarios = "USER"
-    const responDatosUser = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+id,+name,+email,+Documento+from+${tablaUsuarios}+WHERE+id=${idusuario}+ORDER+BY+id+DESC&output=json`)
+    const responDatosUser = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+id,+name,+email,+Documento,+R57591380+from+${tablaUsuarios}+WHERE+id=${idusuario}+ORDER+BY+id+DESC&output=json`)
     return responDatosUser.data
 
   } catch (error) {
     console.log("No fue posible obtener datos de usuario ", error)
   }
 }
+
+//consultar datos proveedor 
+export const datosConductor = async(idConductor)=>{
+  try {
+    const tokenusuario = await obtenerToken()
+    const tablaProveedor= "Proveedor"
+    const responConductor = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+Nombre,+Url_Firma,+Url_Huella,+Num_Documento,+Despachos_Asignados,+Despachos_Cumplidos,+Despachos_en_Transito,+Placa_TXT+from+${tablaProveedor}+WHERE+id=${idConductor}+ORDER+BY+id+DESC&output=json`)
+    console.log("datos "+ responConductor.data)
+    return responConductor.data
+
+  } catch (error) {
+    console.log("No fue posible obtener datos del conductor ", error)
+  }
+}
+
+
 
 export const solicitarPermisoUbicacion = async () => {
   try {
@@ -638,6 +656,435 @@ export const enviarImagenBase64_asistencia = async (id, base64Image,campo) => {
     return response.data;
   } catch (error) {
     console.error('Error al enviar la imagen en base64 de asistencia:', error);
+    throw error;
+  }
+};
+
+//enviar firma conductor 
+
+export const enviarfirmaBase64conductor = async (base64Image,idConductor) => {
+  try {
+    
+    const token2 = await obtenerToken(); // Llama a la función para obtener el token
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token2}&objName=Proveedor`;
+    
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Proveedor" id="${idConductor}" useIds="true">
+        <Field name="Firma_TXT">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    console.log("El id del proveedor ", idConductor );
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
+    throw error;
+  }
+};
+
+//url firma huella conductor 
+
+//consultar datos proveedor 
+export const datosConductor_firma_huella = async(idConductor)=>{
+  try {
+    const tokenusuario = await obtenerToken()
+    const tablaProveedor= "Proveedor"
+    const responConductor = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+Url_Firma,+Url_Huella+from+${tablaProveedor}+WHERE+id=${idConductor}+ORDER+BY+id+DESC&output=json`)
+    console.log("datos firma y huella "+ responConductor.data)
+    return responConductor.data;
+
+  } catch (error) {
+    console.log("No fue posible obtener datos del conductor ", error)
+  }
+}
+
+
+
+export const enviarhuellaBase64conductor = async (base64Image,idConductor) => {
+  try {
+    
+    const token2 = await obtenerToken(); // Llama a la función para obtener el token
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token2}&objName=Proveedor`;
+    
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Proveedor" id="${idConductor}" useIds="true">
+        <Field name="Huella_TXT">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    console.log("El id del proveedor ", idConductor );
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
+    throw error;
+  }
+};
+
+
+//url link de inventario 
+export const link_inventario_despacho = async(id_despacho)=>{
+  try {
+    const tokenusuario = await obtenerToken()
+    const tablaProveedor= "Despacho"
+    const responConductor = await axios.post(`${url}/selectQuery?sessionId=${tokenusuario}&startRow=0&maxRows=1&query=select+Link_Inventario_Vehiculo+from+${tablaProveedor}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+    console.log("datos link despacho "+ responConductor.data)
+    return responConductor.data;
+
+  } catch (error) {
+    console.log("No fue posible obtener datos del link despacho ", error)
+  }
+}
+
+
+//enviar foto cargue 
+
+
+export const enviar_foto_cargue = async (base64Image,id_despacho) => {
+  try {
+    
+    const token2 = await obtenerToken(); // Llama a la función para obtener el token
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token2}&objName=Despacho`;
+    
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Despacho" id="${id_despacho}" useIds="true">
+        <Field name="Huella_TXT">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    console.log("El id del despacho ", id_despacho );
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
+    throw error;
+  }
+};
+
+
+
+
+//crear registro de foto despacho 
+
+
+
+export const crearRegistro_foto = async(setBotonDeshabilitadoCrear,tipo_registro,foto_1_formulario,foto_2_formulario,foto_3_formulario,foto_4_formulario,id_despacho,formulario_restablecido,navigation,setModalcargue,setlistaActualizar,setRefreshing,setmodalDetalle)=>{
+  try{
+      //tabla a consultar 
+      let tablaPqr= 'Doc_Despacho'
+      let fecha_foto = new Date()
+      const token6 = await obtenerToken()
+      console.log("id despacho " +  id_despacho + " tipo " + tipo_registro + " fecha " + fecha_foto)
+        const crearRgistro= await axios.post(`${url}/createRecord?sessionId=${token6}&output=json&useIds=true&objName=${tablaPqr}&Tipo=${tipo_registro}&R20993181=${id_despacho}`)
+        //console.log("Respues creacion ", crearRgistro.data) // +${fechapqr},+${tipopqr},+${mediopqr},+${clienteid} &Fecha_de_Recepcion=${fechapqr}&R52302897=${clienteid}&Tipo_de_Informacion=${tipopqr}&MEDIO_DE_RECEPCIN_Q_R_S_F=${mediopqr}
+        //console.log("Respues creacion ", crearRgistro.data) 
+        if(crearRgistro.data.status=='ok'){
+            
+            Alert.alert(
+                'Registro creado',
+                'Gracias. ',
+                [
+                    {
+                      text:'OK',
+                      onPress:()=>{
+                        setModalcargue(false)
+                        
+                      }
+                    }
+                ]
+                )
+
+        }
+        setBotonDeshabilitadoCrear(false)
+        let idfoto_creacion = crearRgistro.data.id;
+        console.log("foto 3" + foto_4_formulario);
+        const fotosFormulario = {
+          foto1: { foto: foto_1_formulario, campo: "foto1_base64" },
+          foto2: { foto: foto_2_formulario, campo: "foto2_base64" },
+          foto3: { foto: foto_3_formulario, campo: "foto3_base64" },
+          foto4: { foto: foto_4_formulario, campo: "foto4_base64" }
+
+        };
+
+        for(const key in fotosFormulario){
+          if (fotosFormulario.hasOwnProperty(key)) {
+            if(fotosFormulario[key].foto!=="" && fotosFormulario[key].foto!==undefined){
+              try {
+                await enviarImagenBase64_docdespacho(idfoto_creacion,fotosFormulario[key].foto,fotosFormulario[key].campo)
+              } catch (error) {
+                Alert.alert(
+                  "Error",
+                  "La foto no pudo ser enviada " + fotosFormulario[key],
+                  [
+                    {
+                      text:'OK',
+                      onPress:()=>{
+                        setModalcargue(false)
+                      }
+                    }
+                  ]
+                )
+              }
+
+            }
+          }
+
+
+        }
+
+
+
+
+
+
+      
+  } catch (error) {
+      console.error('No fue posible crear :', error);
+      Alert.alert('Error','No es posible crear, intente mas tarde. ')
+      throw error;
+  }
+  setlistaActualizar(1)
+  formulario_restablecido()
+  setBotonDeshabilitadoCrear(false)
+  
+  navigation.navigate('Formulario')
+  
+
+}
+
+
+
+
+//fotos doc despacho
+
+export const enviarImagenBase64_docdespacho = async (id, base64Image,campo) => {
+  try {
+      
+      const token = await obtenerToken()
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token}&objName=Doc_Despacho`;
+
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Doc_Despacho" id="${id}" useIds="true">
+        <Field name="${campo}">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
+    throw error;
+  }
+};
+
+
+
+//enviar novedad 
+
+
+
+export const enviar_novedad = async(texto,id_despacho,setModalNovedad)=>{
+  console.log("despacho id es " + id_despacho)
+  try {
+    
+    const token2 = await obtenerToken(); // Llama a la función para obtener el token
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token2}&objName=Despacho`;
+    
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Despacho" id="${id_despacho}" useIds="true">
+        <Field name="comment">${texto}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    console.log("El id del despacho ", id_despacho );
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+    console.log("respuesta mensaje " +response.data);
+
+
+    // Configura el parser para no ignorar atributos
+    const parser = new XMLParser({
+      ignoreAttributes: false, // Asegura que los atributos sean parseados
+    });
+    const result = parser.parse(response.data);
+
+    // Verifica la estructura del resultado
+    console.log("Resultado parseado: ", result);
+
+    // Accede al atributo 'status' con '@_' como prefijo
+    const status = result?.resp?.["@_status"];
+    console.log("Estado de la respuesta: ", status);
+    if (status === "ok") {
+      Alert.alert(
+        "Éxito",
+        "Novedad enviada correctamente",
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setModalNovedad(false); // Cambiar el estado al presionar "OK"
+            }
+          }
+        ]
+      );
+    } else {
+      Alert.alert(
+        "Error",
+        "No se pudo enviar la novedad. Intente más tarde",
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setModalNovedad(false); // Cambiar el estado al presionar "OK"
+            }
+          }
+        ]
+      );
+    }
+
+    //return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
+    throw error;
+  }
+};
+
+
+//lista de doc fotos
+
+export const lista_fotos_despacho = async(id_despacho)=>{
+  try {
+      //tabla a consultar 
+      let tablaArchivos= 'Doc_Despacho'
+      const token3 = await obtenerToken()
+      //R52302897 realacion cliente 
+      
+      
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+createdAt+from+${tablaArchivos}+WHERE+R20993181=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+      //console.log('Lista fotos despacho', responceArchivos.data)
+      return responceArchivos.data
+  } catch (error) {
+      console.error('Error al obtener la información de los archivos :', error);
+      throw error;
+  }
+
+}
+
+
+//despacho informacio 
+
+export const despacho_informacion = async(id_despacho)=>{
+  try {
+      //tabla a consultar 
+      let tablaArchivos= 'Despacho'
+      const token3 = await obtenerToken()
+      //R52302897 realacion cliente 
+      const idusuario = await userActual()
+      
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=1&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Tipo_Contenedor,+Manifiesto_URL,+Remesa_URL+from+${tablaArchivos}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+      //console.log('Datos de despacho', responceArchivos.data)
+      return responceArchivos.data
+  } catch (error) {
+      console.error('Error al obtener la información de los archivos 1 :', error);
+      throw error;
+  }
+
+}
+
+
+export const lista_novedades = async (id_despacho) => {
+  try {
+    // Tabla a consultar 
+    let tablaArchivos = '$COMMENT';
+    const token3 = await obtenerToken();
+
+    // Construir los parámetros de consulta
+    const params = {
+      sessionId: token3,
+      startRow: 0,
+      maxRows: 20,
+      query: `select content from ${tablaArchivos} WHERE objId=${id_despacho} ORDER BY id DESC`,
+      output: 'json',
+    };
+
+    // Convertir los parámetros a una cadena de consulta
+    const queryStringified = queryString.stringify(params);
+
+    // Hacer la solicitud
+    const novedades = await axios.post(`${url}/selectQuery?${queryStringified}`);
+    
+    console.log('Novedades creadas: ', novedades.data);
+    return novedades.data;
+
+  } catch (error) {
+    // Obtener más información sobre el error
+    if (error.response) {
+      // El servidor respondió con un código de estado fuera del rango 2xx
+      console.error('Error en la respuesta del servidor:', {
+        status: error.response.status,           // Código de estado HTTP
+        data: error.response.data,               // Datos devueltos por el servidor
+        headers: error.response.headers          // Encabezados de la respuesta
+      });
+    } else if (error.request) {
+      // La solicitud fue hecha pero no se recibió respuesta
+      console.error('No se recibió respuesta del servidor. Detalles de la solicitud:', error.request);
+    } else {
+      // Algo pasó al configurar la solicitud
+      console.error('Error al hacer la solicitud:', error.message);
+    }
     throw error;
   }
 };

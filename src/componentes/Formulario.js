@@ -12,7 +12,8 @@ import {
   Animated,
   Image,
   BackHandler,
-  RefreshControl
+  RefreshControl,
+  
 } from "react-native";
 
 import { datosUsuario,solicitarPermisoUbicacion } from "../helpers/index_peticiones";
@@ -21,11 +22,13 @@ import Archivos_creados from "./Archivos_creados";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomAlert from "./CustomAlert";
 import Asistencia_registrada from "./Asistencia_registrada";
-
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Pantala_configuracion from "./Pantala_configuracion";
 const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn,setModal }) => {
 
   const [animacionboton] = useState(new Animated.Value(1));
-
+      //Filtro para vista de despachos 
+  const [filtroDepacho,setFiltroDespacho] = useState('')
 
 
 
@@ -40,6 +43,12 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
   //Estado para recargar componente 
   const [refreshing, setRefreshing] = useState(false);
 
+  //Placa
+  const [placavehiculo,setPlacaVechiculo] = useState("")
+
+  //modal de menu
+  const [modalVisiblemenu, setModalVisiblemenu] = useState(false);
+  const [idConductor,setIdConductor] = useState("");
   const refresh = useCallback(async ()=>{
     setRefreshing(true)
     try {
@@ -75,6 +84,8 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
       try {
         const response = await datosUsuario();
         setData(response);
+        //console.log("validar si muestra id conductor " + response[0][4]);
+        setIdConductor(response[0][4]);
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
       }
@@ -129,8 +140,20 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
         }
       
       >
+        
+      <Pressable onPress={() => {
+        setModalVisiblemenu(true)
+        
+
+      }}>
+        <Icon name="bars" size={30} color="#064973" style={styles.iconoBoton} />
+      </Pressable>
+
+
+       
+        
         <View style={styles.items}>
-          <Image source={require('../../assets/Log_MiiA_modulo.png')} style={styles.imagen}/>
+          <Image source={require('../../assets/impel_log_new.png')} style={styles.imagen}/>
          {data && data.length > 0 && (
             <View style={styles.datoslogin}>
                 <Text style={styles.datosText}>{data[0][1]}</Text>
@@ -147,45 +170,21 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
 
           <Archivos_creados
             listaActualizar={listaActualizar}
+            setPlacaVechiculo={setPlacaVechiculo}
+            filtroDepacho={filtroDepacho} 
+            navigation={navigation}
+            setlistaActualizar={setlistaActualizar}
           />
           
         </View>
 
 
-        <View style={styles.contenedorboton}>
-          <Pressable style={styles.botonLogin} onPress={() => {
-              navigation.navigate('Formulario2')
-            }}
-
-            
-            
-            >
-            <Text style={styles.textoboton}>Crear</Text>
-          </Pressable>
-
-        </View>
 
 
-      <View style={styles.items}>
-        <Text style={styles.datosText}>Registro de Asistencia</Text>
-        <Asistencia_registrada
-          listaActualizar={listaActualizar}
-        />
 
-      </View>
 
-      <View style={styles.contenedorboton}>
-          <Pressable style={styles.botonLogin} onPress={() => {
-              navigation.navigate('Formulario_asistncia')
-            }}
 
-            
-            
-            >
-            <Text style={styles.textoboton}>Registrar</Text>
-          </Pressable>
 
-        </View>
 
       
       </ScrollView>
@@ -197,7 +196,24 @@ const Formulario = ({setlistaActualizar,listaActualizar,navigation,setisLoggedIn
         onConfirm={handleConfirmAlert}
       />
 
+    {modalVisiblemenu && (
+              <Modal
+                transparent={true}
+                visible={modalVisiblemenu}
+                animationType="slide"
+              >
+              <Pantala_configuracion
+                setModalVisiblemenu={setModalVisiblemenu}
+                navigation={navigation}
+                idConductor={idConductor}
+                placavehiculo={placavehiculo}
+                setFiltroDespacho={setFiltroDespacho} 
+                
+              />
 
+
+              </Modal>
+              )}
 
     </View>
   );
@@ -290,12 +306,12 @@ const styles = StyleSheet.create({
   },
   botonLogin: {
     marginTop: "10%",
-    backgroundColor: "#ff2301",
+    backgroundColor: "#0057A0",
     padding: 10,
     width: 200,
     borderRadius: 10,
     borderWidth:2,
-    borderColor:"#ff2301"
+    borderColor:"#0057A0"
   },
   textoboton: {
     color: "#fff",
@@ -321,8 +337,8 @@ const styles = StyleSheet.create({
   },datoslogin:{
     width:'100%',
     marginLeft:'20%',
-    marginBottom:'10%',
-    marginTop:'10%',
+    marginBottom:'2%',
+    marginTop:'2%',
     
   },datosText:{
     fontSize:20,
@@ -337,6 +353,8 @@ const styles = StyleSheet.create({
     marginBottom:'10%',
     alignItems:'center'
     
+  },iconoBoton:{
+    padding:10
   }
 });
 export default Formulario;

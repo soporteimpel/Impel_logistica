@@ -13,7 +13,7 @@ import {
 
 import moment from 'moment';
 import { asesores_asistencia } from '../helpers/index_peticiones';
-const Asistencia_detalle = ({setmodalDetalle,aistenciaName,aistenciaId,creador,tipoAsistencia,fechaAsistencia,urlfoto}) => {
+const Asistencia_detalle = ({setmodalDetalle,aistenciaName,aistenciaId,creador,tipoAsistencia,fechaAsistencia,urlfoto,id_despacho}) => {
     const [imageHeight, setImageHeight] = useState(0);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
