@@ -17,11 +17,12 @@ import Documento_cargue from './Documento_cargue';
 import { FAB} from 'react-native-paper';
 import Novedades from './Novedades';
 import { lista_fotos_despacho,despacho_informacion,lista_novedades } from '../helpers/index_peticiones';
+import Prueba_despacho_det from './Prueba_despacho_det';
 
 
 
-
-const Archivo_detalle = ({setmodalDetalle,estado,despachoName,placa,fechaManifiesto,numero_manifiesto,origen,direccion_origen,destino,direccion_destino,fecha_cargue,link_inventario,id_despacho,navigation,setlistaActualizar,listaActualizar}) => {
+const Archivo_detalle = ({setmodalDetalle,estado,despachoName,placa,fechaManifiesto,numero_manifiesto,origen,direccion_origen,destino,direccion_destino,fecha_cargue,
+  link_inventario,id_despacho,navigation,setlistaActualizar,listaActualizar,lugarRecogida,fechaRcogida,lugarDevolucion,fechaDevolucion}) => {
   const [modalcargue,setModalcargue] = useState(false)
   const [modalNovedad,setModalNovedad] = useState(false)
   const [datafoto,setDataFoto] = useState([])
@@ -34,11 +35,24 @@ const Archivo_detalle = ({setmodalDetalle,estado,despachoName,placa,fechaManifie
   const [nombredespachodet,setNombredespachodet] = useState('')
   const [estadodespachodet,setEstadodespachodet] = useState('')
   const [ulrmanifiesto,setUlrmanifiesto] =useState('')
-  const [ulrRemesa,setUlrRemea] =useState('')
+  const [ordenServicio, setOrdenServicio] = useState('')
+  const [ulrRemesa1,setUlrRemea1] =useState('')
+  const [ulrRemesa2,setUlrRemea2] =useState('')
+  const [ulrRemesa3,setUlrRemea3] =useState('')
+  const [ulrRemesa4,setUlrRemea4] =useState('')
 
   //Estado para la consulta de la novedad 
   const [data_novedad,setData_novedad] = useState([])
 
+  //Estados Despacho Detalle
+  const [modalPruebaDespacho, setModalPruebaDespacho] = useState("")
+  const [tipo_prueba, setTipo_prueba] = useState("")
+  const [fecha_prueba, setFecha_prueba] = useState("")
+  const [foto_prueba1, setFoto_prueba1] = useState("")
+  const [foto_prueba2, setFoto_prueba2] = useState("")
+  const [foto_prueba3, setFoto_prueba3] = useState("")
+  const [foto_prueba4, setFoto_prueba4] = useState("")
+  const [idprueba1, setIdprueba1] = useState("")
   const [tipocontenedor,setTipocontenedor] = useState('') // si tipo de contenedor es 57584347 se muestra boton para registrar entrega de contendor 
   const refresh = useCallback(async ()=>{
     setRefreshing(true)
@@ -126,7 +140,11 @@ const Archivo_detalle = ({setmodalDetalle,estado,despachoName,placa,fechaManifie
       setEstadodespachodet(datadetalle[0][4]);
       setTipocontenedor(parseInt(datadetalle[0][15]))
       setUlrmanifiesto(datadetalle[0][16])
-      setUlrRemea(datadetalle[0][17])
+      setOrdenServicio(datadetalle[0][17])
+      setUlrRemea1(datadetalle[0][18])
+      setUlrRemea2(datadetalle[0][19])
+      setUlrRemea3(datadetalle[0][20])
+      setUlrRemea4(datadetalle[0][21])
       console.log('el tipo de contenedor es ' + datadetalle[0][15])
     }
   }, [datadetalle]);
@@ -191,7 +209,7 @@ const enviar_a_link = async()=>{
 }
 
 const enviar_a_link_docuentos = async(url)=>{
-  let urlimpel = url
+  let urlimpel = url ? url : '';
   console.log('la url del documento a ver es ' + urlimpel)
   if(urlimpel || urlimpel!==''){
     await Linking.openURL(urlimpel)
@@ -243,6 +261,17 @@ const enviar_a_link_docuentos = async(url)=>{
                     <Text style={styles.datosstyle}>Dirección destino: {direccion_destino}</Text>
                     <Text style={styles.datosstyle}>Fecha de cargue: {fecha_cargue_format}</Text>
                     <Text style={styles.datosstyle_header}>Estado: {datadetalle[0][4]}</Text>
+                    {tipocontenedor == 57584347 &&
+                        <View>
+                        <Text style={styles.datosstyle_header}>Datos Contenedor</Text>
+                        <Text style={styles.datosstyle}>Fecha de Recogida: {fechaRcogida}</Text>
+                        <Text style={styles.datosstyle}>Lugar de Recogida: {lugarRecogida}</Text>
+                        <Text style={styles.datosstyle}>Fecha de Devolución: {fechaDevolucion}</Text>
+                        <Text style={styles.datosstyle}>Ludar de Devolución: {lugarDevolucion}</Text>
+                          
+                        </View>
+                    }
+
 
                     <Pressable >
                       <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrmanifiesto)}>
@@ -251,8 +280,32 @@ const enviar_a_link_docuentos = async(url)=>{
                     </Pressable>
 
                     <Pressable >
-                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrRemesa)}>
-                        Remesa
+                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ordenServicio)}>
+                        Orden de Servicio
+                      </Text>
+                    </Pressable>
+
+                    <Pressable >
+                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrRemesa1)}>
+                        Remesa 1
+                      </Text>
+                    </Pressable>
+
+                    <Pressable >
+                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrRemesa2)}>
+                        Remesa 2
+                      </Text>
+                    </Pressable>
+
+                    <Pressable >
+                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrRemesa3)}>
+                        Remesa 3
+                      </Text>
+                    </Pressable>
+
+                    <Pressable >
+                      <Text style={styles.datosstyle_link} onPress={()=>enviar_a_link_docuentos(ulrRemesa4)}>
+                        Remesa 4
                       </Text>
                     </Pressable>
                    
@@ -307,12 +360,25 @@ const enviar_a_link_docuentos = async(url)=>{
                 <ScrollView
                   nestedScrollEnabled={true}
                 >
-                  <Text style={styles.datosstyle_header}>Despachos:</Text> 
+                  <Text style={styles.datosstyle_header}>Pruebas Despacho:</Text> 
                   {Array.isArray(datafoto) && datafoto.length > 0 ? (
                     datafoto.map((item, index) => (
-                      <View key={index} style={styles.itemContainer}>
-                        <Text style={styles.datosstyle_fotos}>Tipo: {item[1]} Creado en: {fecha_formatear2(item[2])}</Text>
-                      </View>
+                      <Pressable onPress={()=>{
+                      setModalPruebaDespacho(true)
+                      setIdprueba1(item[0])
+                      setTipo_prueba(item[1])
+                      setFecha_prueba(item[2])
+                      setFoto_prueba1(item[3])
+                      setFoto_prueba2(item[4])
+                      setFoto_prueba3(item[5])
+                      setFoto_prueba4(item[6])
+                      
+                      }}>
+                        <View key={index} style={styles.itemContainer}>
+                          <Text style={styles.datosstyle_fotos}>Tipo: {item[1]} Creado en: {fecha_formatear2(item[2])}</Text>
+                        </View>
+                      </Pressable>
+
                     ))
                   ) : (
                     <Text>No hay datos disponibles</Text>
@@ -383,6 +449,24 @@ const enviar_a_link_docuentos = async(url)=>{
                   estado={estado}
                   navigation={navigation}
                   setlistaActualizar={setlistaActualizar}
+                />
+
+              </Modal>
+            )}
+            {modalPruebaDespacho&&(
+              <Modal
+                animationType='slide'
+                visible={modalPruebaDespacho}
+              >
+                <Prueba_despacho_det
+                  setModalPruebaDespacho={setModalPruebaDespacho}
+                  tipo_prueba={tipo_prueba}
+                  fecha_prueba={fecha_prueba}
+                  foto_prueba1={foto_prueba1}
+                  foto_prueba2={foto_prueba2}
+                  foto_prueba3={foto_prueba3}
+                  foto_prueba4={foto_prueba4}
+                  idprueba1={idprueba1}
                 />
 
               </Modal>

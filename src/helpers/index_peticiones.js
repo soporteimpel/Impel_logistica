@@ -370,9 +370,31 @@ export const archivosList = async()=>{
       const token3 = await obtenerToken()
       //R52302897 realacion cliente 
       const idusuario = await userActual()
+      const usuario_inspector = "USER";
+      let tablausuario_inspector = "";
+      try {
+        tablausuario_inspector = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+Inspector+from+${usuario_inspector}+WHERE+id=${idusuario}+ORDER+BY+id+DESC&output=json`)
+        console.log("El usuario es inspector? " + tablausuario_inspector.data);
+        
+      } catch (error) {
+        console.log("No es posible obtener informacion, para saber si usuario es inspector. " + error);
+        
+      }
+      let responceArchivos;
+      if(tablausuario_inspector.data==0){
+        console.log("El usuario no es inspector peticion filtrada");
+        responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Fecha_Recg_Contenedor,+
+          Lugar_Recg_Contenedor,+Fecha_Max_Devolucion,+Lugar_Dev_Contenedor+from+${tablaArchivos}+WHERE+id_user_vehiculo=${idusuario}+ORDER+BY+id+DESC&output=json`)
+        
+      }else{
+        console.log("El usuario no es inspector peticion sin filtrar ");
+        responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Fecha_Recg_Contenedor,+
+          Lugar_Recg_Contenedor,+Fecha_Max_Devolucion,+Lugar_Dev_Contenedor+from+${tablaArchivos}+ORDER+BY+id+DESC&output=json`)
+
+      }
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo+from+${tablaArchivos}+WHERE+id_user_vehiculo=${idusuario}+ORDER+BY+id+DESC&output=json`)
-      //console.log('Lista despachos este es el conductor ', responceArchivos.data)
+
+      console.log('Lista despachos este es el conductor ', responceArchivos.data + " usuario id " + idusuario)
       return responceArchivos.data
   } catch (error) {
       console.error('Error al obtener la información de los archivos 1 :', error);
@@ -1013,7 +1035,7 @@ export const lista_fotos_despacho = async(id_despacho)=>{
       //R52302897 realacion cliente 
       
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+createdAt+from+${tablaArchivos}+WHERE+R20993181=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=100&query=select+id,+name,+createdAt,+url_foto1,+url_foto2,+url_foto3,+url_foto4+from+${tablaArchivos}+WHERE+R20993181=${id_despacho}+ORDER+BY+id+DESC&output=json`)
       //console.log('Lista fotos despacho', responceArchivos.data)
       return responceArchivos.data
   } catch (error) {
@@ -1034,7 +1056,7 @@ export const despacho_informacion = async(id_despacho)=>{
       //R52302897 realacion cliente 
       const idusuario = await userActual()
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=1&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Tipo_Contenedor,+Manifiesto_URL,+Remesa_URL+from+${tablaArchivos}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=1&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Tipo_Contenedor,+Manifiesto_URL,+Orden_de_servicio_URL,+Remesa_URL,+Remesa_URL_2,+Remesa_URL_3,+Remesa_URL_4+from+${tablaArchivos}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
       //console.log('Datos de despacho', responceArchivos.data)
       return responceArchivos.data
   } catch (error) {
@@ -1085,6 +1107,38 @@ export const lista_novedades = async (id_despacho) => {
       // Algo pasó al configurar la solicitud
       console.error('Error al hacer la solicitud:', error.message);
     }
+    throw error;
+  }
+};
+
+
+export const enviarImagenBase64_pruebas = async (id, base64Image,campo) => {
+  try {
+      
+      const token = await obtenerToken()
+    const url = `https://www.impeltechnology.com/rest/api/update?sessionId=${token}&objName=Archivos`;
+
+    // Define el cuerpo de la solicitud en formato XML
+    const xmlData = `
+     
+      <data objName="Doc_Despacho" id="${id}" useIds="true">
+        <Field name="${campo}">${base64Image}</Field>
+      </data>
+    `;
+
+    const headers = {
+      'Content-Type': 'application/xml', // Tipo de contenido XML
+    };
+
+    // Realiza una solicitud PUT a la URL con los datos en el cuerpo
+    //console.log('url envio ', url);
+    //console.log('datos del body', xmlData);
+    const response = await axios.put(url, xmlData, { headers });
+
+    // Retorna la respuesta
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar la imagen en base64:', error);
     throw error;
   }
 };

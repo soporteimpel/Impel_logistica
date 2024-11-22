@@ -35,10 +35,18 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
     const [fecha_cargue,setFecha_cargue] = useState("")
     const [link_inventario,setLink_inventario] = useState("")
 
+    //Estados contenedor 
+    const [fechaRcogida, setFechaRcogida] = useState("")
+    const [lugarRecogida, setLugarRecogida] = useState("")
+    const [fechaDevolucion, setFechaDevolucion] = useState("")
+    const [lugarDevolucion, setLugarDevolucion] = useState("")
+
     useEffect(() => {
       async function fetchData() {
         try {
           const response = await archivosList();
+          console.log("datos obtenidos " + response.length);
+          
           setData(response);
           setFilteredData(response)
         } catch (error) {
@@ -126,7 +134,7 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
     
     
 
-
+    //console.log("Filter data tiene " + filteredData[0][0])
   
     return (
       <View style={styles.contenedor}>
@@ -136,7 +144,10 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
           {loading ? (
             <Text>Cargando...</Text>
           ) : (
+            
+            
             filteredData.map((item, index) => (
+              
               <Pressable
                 key={index}
                 style={styles.boton}
@@ -156,6 +167,10 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
                   setDireccion_destino(item[12])
                   setFecha_cargue(item[13])
                   setLink_inventario(item[14])
+                  setFechaRcogida(item[15])
+                  setLugarRecogida(item[16])
+                  setFechaDevolucion(item[17])
+                  setLugarDevolucion(item[18])
   
                   
                 }}
@@ -195,6 +210,10 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
                 navigation={navigation}
                 setlistaActualizar={setlistaActualizar}
                 listaActualizar={listaActualizar}
+                lugarRecogida={lugarRecogida}
+                fechaRcogida={fechaRcogida}
+                lugarDevolucion={lugarDevolucion}
+                fechaDevolucion={fechaDevolucion}
               />
               
             </Modal>
