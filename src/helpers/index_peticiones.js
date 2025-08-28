@@ -1056,7 +1056,7 @@ export const despacho_informacion = async(id_despacho)=>{
       //R52302897 realacion cliente 
       const idusuario = await userActual()
       
-      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=1&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Tipo_Contenedor,+Manifiesto_URL,+Orden_de_servicio_URL,+Remesa_URL,+Remesa_URL_2,+Remesa_URL_3,+Remesa_URL_4+from+${tablaArchivos}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
+      const responceArchivos = await axios.post(`${url}/selectQuery?sessionId=${token3}&startRow=0&maxRows=1&query=select+id,+name,+Secuencia,+Placa,+Estadotxt,+createdAt,+Cliente_txt,+Fecha_Manifiesto,+Manifiesto_No_,+OrigenTxt,+Direccion_Origen,+DestinoTxt,+Direccin_Entrega,+Fecha_y_Hora_de_Cargue,+Link_Inventario_Vehiculo,+Tipo_Operacion_txt,+Manifiesto_URL,+Orden_de_servicio_URL,+Remesa_URL,+Remesa_URL_2,+Remesa_URL_3,+Remesa_URL_4+from+${tablaArchivos}+WHERE+id=${id_despacho}+ORDER+BY+id+DESC&output=json`)
       //console.log('Datos de despacho', responceArchivos.data)
       return responceArchivos.data
   } catch (error) {

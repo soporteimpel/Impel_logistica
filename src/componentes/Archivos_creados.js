@@ -45,7 +45,7 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
       async function fetchData() {
         try {
           const response = await archivosList();
-          console.log("datos obtenidos " + response.length);
+          console.log("datos obtenidos " + response);
           
           setData(response);
           setFilteredData(response)
@@ -59,10 +59,11 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
     }, [listaActualizar,modalDetalle]);
 
     useEffect(() => {
+      console.log("filtro despacho");
       if (filtroDepacho && typeof filtroDepacho === 'string') {
         const estadoNormalizado = filtroDepacho
           .normalize ? filtroDepacho.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : filtroDepacho;
-    
+        
         if (estadoNormalizado.toLowerCase() === 'en transito') {
           // Filtra los registros con el estado 'En Tránsito'
           const datosFiltrados = data.filter((item) => {
@@ -125,28 +126,35 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
         } else {
           // Si no es 'En Tránsito' ni 'Finalizado', muestra todos los datos
           setFilteredData(data);
+         
         }
       } else {
         // Si no hay filtro, muestra todos los datos
         setFilteredData(data);
+        console.log("muestra todos los datos " + data);
       }
     }, [filtroDepacho, data,listaActualizar]);
     
     
-
+    
     //console.log("Filter data tiene " + filteredData[0][0])
   
     return (
       <View style={styles.contenedor}>
+        
         <ScrollView 
           nestedScrollEnabled={true}
         >
+           
+          
           {loading ? (
             <Text>Cargando...</Text>
+            
           ) : (
             
             
             filteredData.map((item, index) => (
+              
               
               <Pressable
                 key={index}
@@ -175,6 +183,7 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
                   
                 }}
               >
+                
                 <Text style={styles.contenedorLista}> 
                   Estado: <Text style={styles.contenedorLista_valor}>{item[4]}</Text>{"\n"} 
                   Despacho: <Text style={styles.contenedorLista_valor}>{item[1]}</Text>{"\n"} 
@@ -225,6 +234,7 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
   
         </ScrollView>
       </View>
+     
     );
   };
   
@@ -233,7 +243,7 @@ const Archivos_creados = ({listaActualizar,setPlacaVechiculo,filtroDepacho,navig
       ...globalstyles.contenedor,
       transform: [{ translateY: 0 }],
       width: "90%",
-      height:"50",
+      height:"50%",
       flex:1,
       marginTop:10,
       marginBottom:20

@@ -138,7 +138,7 @@ const Archivo_detalle = ({setmodalDetalle,estado,despachoName,placa,fechaManifie
   useEffect(() => {
     if (datadetalle.length > 0 && datadetalle[0].length > 4) {
       setEstadodespachodet(datadetalle[0][4]);
-      setTipocontenedor(parseInt(datadetalle[0][15]))
+      setTipocontenedor(datadetalle[0][15])
       setUlrmanifiesto(datadetalle[0][16])
       setOrdenServicio(datadetalle[0][17])
       setUlrRemea1(datadetalle[0][18])
@@ -261,7 +261,7 @@ const enviar_a_link_docuentos = async(url)=>{
                     <Text style={styles.datosstyle}>Dirección destino: {direccion_destino}</Text>
                     <Text style={styles.datosstyle}>Fecha de cargue: {fecha_cargue_format}</Text>
                     <Text style={styles.datosstyle_header}>Estado: {datadetalle[0][4]}</Text>
-                    {tipocontenedor == 57584347 &&
+                    {tipocontenedor == "LCL" &&
                         <View>
                         <Text style={styles.datosstyle_header}>Datos Contenedor</Text>
                         <Text style={styles.datosstyle}>Fecha de Recogida: {fechaRcogida}</Text>
@@ -417,7 +417,7 @@ const enviar_a_link_docuentos = async(url)=>{
 
 
         
-        {(estadodespachodet.toLowerCase() === 'habilitado para cargue' || estadodespachodet.toLowerCase() === 'en transito' || estadodespachodet.toLowerCase() === 'confirmado' || estadodespachodet.toLowerCase() === 'en tránsito' || estadodespachodet.toLowerCase() === 'entregado' || estadodespachodet.toLowerCase() === 'cumplido' || (tipocontenedor == 57584347 && estadodespachodet.toLowerCase() === 'finalizado'))&& 
+        {(estadodespachodet.toLowerCase() === 'habilitado para cargue' || estadodespachodet.toLowerCase() === 'en transito' || estadodespachodet.toLowerCase() === 'confirmado' || estadodespachodet.toLowerCase() === 'en tránsito' || estadodespachodet.toLowerCase() === 'entregado' || estadodespachodet.toLowerCase() === 'cumplido' || (tipocontenedor == "LCL" && estadodespachodet.toLowerCase() === 'finalizado'))&& 
         <FAB
                 icon={"camera"}
                 color='#fff'
